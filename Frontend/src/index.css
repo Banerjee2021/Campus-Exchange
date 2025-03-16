@@ -1,6 +1,9 @@
 @import "tailwindcss" ; 
 
 
+
+/* -------------- Navbar ------------- */
+
 #navbar-btns > button{
     padding-inline: 20px;
     padding-block: 4px;
@@ -14,4 +17,16 @@
 
 #navbar-btns > button:hover{
     background-color: #241cff;
+}
+
+#navbar-items > ul > li{
+    color: #241cff;
+    font-weight: 500;
+    transition: 0.2s ease-in-out;
+}
+#profile > #arrow{
+    transition: 0.35s ease-in-out;
+}
+#profile:hover > #arrow{
+    transform: rotate(180deg);
 }
