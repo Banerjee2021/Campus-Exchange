@@ -1,32 +1,56 @@
-@import "tailwindcss" ; 
-
-
+@import "tailwindcss";
 
 /* -------------- Navbar ------------- */
 
-#navbar-btns > button{
-    padding-inline: 20px;
-    padding-block: 4px;
-    color: white;
-    background-color: #443DFF;
-    margin-inline: 8px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
+#navbar-btns > button {
+  padding-inline: 20px;
+  padding-block: 4px;
+  color: white;
+  background-color: #443dff;
+  margin-inline: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-#navbar-btns > button:hover{
-    background-color: #241cff;
+#navbar-items ul {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
 }
 
-#navbar-items > ul > li{
-    color: #241cff;
-    font-weight: 500;
-    transition: 0.2s ease-in-out;
+#navbar-items li {
+  position: relative;
+  color: #2f27ce;
+  font-weight: 600;
 }
-#profile > #arrow{
-    transition: 0.35s ease-in-out;
+
+#navbar-items li a {
+  display: block;
+  padding: 0.5rem 0.25rem;
+  text-decoration: none;
 }
-#profile:hover > #arrow{
-    transform: rotate(180deg);
+
+#navbar-items li::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 4px;
+  background-color: #2f27ce;
+  transform: translateX(-50%);
+  transition: width 0.35s ease-in-out;
+  transform-origin: center;
+}
+
+#navbar-items li:hover::after {
+  width: 60%;
+}
+#profile > #arrow {
+  transition: 0.35s ease-in-out;
+}
+#profile:hover > #arrow {
+  transform: rotate(180deg);
 }
