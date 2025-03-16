@@ -1,0 +1,17 @@
+@import "tailwindcss" ; 
+
+
+#navbar-btns > button{
+    padding-inline: 20px;
+    padding-block: 4px;
+    color: white;
+    background-color: #443DFF;
+    margin-inline: 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#navbar-btns > button:hover{
+    background-color: #241cff;
+}
