@@ -11,6 +11,7 @@ const LogSign = () => {
     setLoading(true);
     
     try {
+      // Send data to the appropriate backend endpoint
       const endpoint = isLogin ? '/login' : '/signup';
       const response = await fetch(`http://localhost:3000${endpoint}`, {
         method: 'POST',
@@ -22,7 +23,8 @@ const LogSign = () => {
       
       const result = await response.json();
       console.log('Server response:', result);
-
+      
+      // Show success message
       alert(isLogin ? 'Logged in successfully!' : 'Signed up successfully!');
       reset();
     } catch (error) {
@@ -39,7 +41,7 @@ const LogSign = () => {
   };
   
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#2f27ce] via-[#0060fb] to-[#009ff5] p-2 sm:p-4 md:p-6">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 p-2 sm:p-4 md:p-6">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-xl overflow-hidden">
           <div className="p-4 sm:p-6 md:p-8">
@@ -54,7 +56,7 @@ const LogSign = () => {
                     Full Name
                   </label>
                   <input
-                    className="appearance-none border-2 border-gray-200 rounded w-full py-2 sm:py-3 px-3 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:border-[#0083ff] transition-colors"
+                    className="appearance-none border-2 border-gray-200 rounded w-full py-2 sm:py-3 px-3 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:border-purple-500 transition-colors"
                     id="name"
                     type="text"
                     placeholder="Enter Your Full Name"
@@ -69,7 +71,7 @@ const LogSign = () => {
                   Email
                 </label>
                 <input
-                  className="appearance-none border-2 border-gray-200 rounded w-full py-2 sm:py-3 px-3 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:border-[#0083ff] transition-colors"
+                  className="appearance-none border-2 border-gray-200 rounded w-full py-2 sm:py-3 px-3 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:border-purple-500 transition-colors"
                   id="email"
                   type="email"
                   placeholder="Enter your email ID"
@@ -87,7 +89,7 @@ const LogSign = () => {
                   Password
                 </label>
                 <input
-                  className="appearance-none border-2 border-gray-200 rounded w-full py-2 sm:py-3 px-3 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:border-[#0083ff] transition-colors"
+                  className="appearance-none border-2 border-gray-200 rounded w-full py-2 sm:py-3 px-3 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:border-purple-500 transition-colors"
                   id="password"
                   type="password"
                   placeholder="Enter password"
@@ -106,7 +108,7 @@ const LogSign = () => {
                     Confirm Password
                   </label>
                   <input
-                    className="appearance-none border-2 border-gray-200 rounded w-full py-2 sm:py-3 px-3 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:border-[#0083ff] transition-colors"
+                    className="appearance-none border-2 border-gray-200 rounded w-full py-2 sm:py-3 px-3 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:border-purple-500 transition-colors"
                     id="confirmPassword"
                     type="password"
                     placeholder="Enter Password"
@@ -129,15 +131,14 @@ const LogSign = () => {
                 )}
                 
                 {isLogin && (
-                  <a className="text-sm text-[#0060fb] hover:text-[#2f27ce] transition-colors" href="#">
+                  <a className="text-sm text-blue-500 hover:text-blue-700 transition-colors" href="#">
                     Forgot Password?
                   </a>
                 )}
               </div>
               
-              {/* Updated button with new color gradient */}
               <button
-                className={`w-full bg-gradient-to-r from-[#2f27ce] via-[#0060fb] to-[#009ff5] hover:from-[#2f27ce] hover:via-[#0083ff] hover:to-[#009ff5] text-white font-bold cursor-pointer py-2 sm:py-3 px-3 sm:px-4 rounded focus:outline-none focus:shadow-outline transition-all duration-300 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold cursor-pointer py-2 sm:py-3 px-3 sm:px-4 rounded focus:outline-none focus:shadow-outline transition-all duration-300 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 type="submit"
                 disabled={loading}
               >
@@ -162,7 +163,7 @@ const LogSign = () => {
             </p>
             <button
               onClick={toggleForm}
-              className="text-[#0060fb] hover:text-[#2f27ce] font-medium transition-colors cursor-pointer"
+              className="text-blue-500 hover:text-blue-700 font-medium transition-colors cursor-pointer"
             >
               {isLogin ? 'Create an account' : 'Log in'}
             </button>
@@ -181,8 +182,7 @@ const LogSign = () => {
                   </svg>
                   Google
                 </button>
-                {/* Updated Facebook button with new blue color */}
-                <button className="flex items-center justify-center bg-[#0060fb] hover:bg-[#2f27ce] text-white font-medium py-2 sm:py-3 px-3 sm:px-4 rounded transition-colors cursor-pointer">
+                <button className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-3 px-3 sm:px-4 rounded transition-colors cursor-pointer">
                   <svg className="h-5 w-5 mr-2 fill-current" viewBox="0 0 24 24">
                     <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z" />
                   </svg>
