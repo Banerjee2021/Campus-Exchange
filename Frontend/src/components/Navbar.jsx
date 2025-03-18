@@ -109,7 +109,7 @@ function Navbar() {
                     <div className="flex flex-col w-full">
                         <ul className="flex flex-col text-center space-y-3">
                             <li className="cursor-pointer hover:text-[#2F27CE] transition-colors font-[600]">Account</li>
-                            <li className="cursor-pointer hover:text-[#2F27CE] transition-colors font-[600]">Sign Up</li>
+                            <li className="cursor-pointer hover:text-[#2F27CE] transition-colors font-[600]"><Link to ='/login'>Sign Up</Link></li>
                         </ul>
                     </div>
                 </div>
