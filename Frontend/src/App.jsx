@@ -5,11 +5,11 @@ import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
 
 // Lazy load pages
-const Home = React.lazy(() => import('./pages/Home.jsx'));
+const Home = React.lazy(() => import('./Pages/Home.jsx'));
 const Marketplace = React.lazy(() => import('./pages/Marketplace.jsx'));
-const Library = React.lazy(() => import('./pages/Library.jsx'));
+const Library = React.lazy(() => import('./pages/Library.jsx')); 
 const Login = React.lazy(() => import('./pages/Login.jsx'));
-// const Signup = React.lazy(() => import('./pages/Signup.jsx'));
+const Signup = React.lazy(() => import('./pages/Signup.jsx'));
 const Profile = React.lazy(() => import('./pages/Profile.jsx'));
 const PostItem = React.lazy(() => import('./pages/PostItem.jsx'));
 const PostLibraryItem = React.lazy(() => import('./pages/PostLibraryItem.jsx'));
@@ -27,7 +27,7 @@ function App() {
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/library" element={<Library />} />
               <Route path="/login" element={<Login />} />
-              {/* <Route path="/signup" element={<Signup />} /> */}
+              <Route path="/signup" element={<Signup />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/post-item" element={<PostItem />} />
               <Route path="/post-library-item" element={<PostLibraryItem />} />
