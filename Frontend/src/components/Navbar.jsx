@@ -2,14 +2,21 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle, 
+  AlertDialogTrigger 
+} from './ui/alert-dialog';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   return (
     <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
@@ -64,13 +71,30 @@ const Navbar = () => {
                       <User size={16} />
                       <span>Go to Profile</span>
                     </Link>
-                    <button 
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                    >
-                      <LogOut size={16} />
-                      <span>Sign Out</span>
-                    </button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button 
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2 cursor-pointer"
+                        >
+                          <LogOut size={16} />
+                          <span>Sign Out</span>
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will log you out of your account and return you to the home page.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={logout}>
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 )}
               </div>

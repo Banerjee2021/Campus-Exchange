@@ -2,6 +2,17 @@ import React, { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle, 
+  AlertDialogTrigger 
+} from '../components/ui/alert-dialog';
 
 const Profile = () => {
   const { user, deleteAccount, logout, loading } = useAuth();
@@ -25,11 +36,6 @@ const Profile = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
   // Show loading state while checking authentication
   if (loading) {
     return (
@@ -48,13 +54,30 @@ const Profile = () => {
     <div className="container mx-auto px-4 py-8 mt-16">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-        <button 
-          onClick={handleLogout}
-          className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
-        >
-          <LogOut size={20} />
-          <span>Logout</span>
-        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button 
+              className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors cursor-pointer"
+            >
+              <LogOut size={20} />
+              <span>Logout</span>
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will sign you out of your account and return you to the home page.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={logout}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
       
       <div className="bg-white shadow rounded-lg p-6 mb-6">
@@ -101,7 +124,7 @@ const Profile = () => {
       <div className="mt-8">
         <button
           onClick={handleDeleteAccount}
-          className="text-red-600 hover:text-red-800 font-medium"
+          className="text-red-600 hover:text-red-800 font-medium cursor-pointer"
         >
           Delete Account
         </button>

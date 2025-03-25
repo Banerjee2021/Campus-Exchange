@@ -44,14 +44,14 @@ const Home = () => {
               <div className="flex space-x-4">
                 <button
                   onClick={() => navigate('/marketplace')}
-                  className="flex items-center space-x-2 bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                  className="flex items-center space-x-2 bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
                 >
                   <ShoppingBag size={20} />
                   <span>Marketplace</span>
                 </button>
                 <button
                   onClick={() => navigate('/library')}
-                  className="flex items-center space-x-2 border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors"
+                  className="flex items-center space-x-2 border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors cursor-pointer"
                 >
                   <BookOpen size={20} />
                   <span>Library</span>
