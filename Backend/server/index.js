@@ -5,9 +5,14 @@ import mongoose from 'mongoose';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import { verifyToken } from './middleware/auth.js';
+import path, { dirname } from 'path' ; 
+import { fileURLToPath } from 'url' ; 
 
 // Load environment variables
-dotenv.config();
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+console.log('JWT_SECRET:', process.env.JWT_SECRET); // Debugging
 
 const app = express();
 
@@ -29,7 +34,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', verifyToken, userRoutes);
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/yourdbname")
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/test")
   .then(() => console.log('Connected to MongoDB'))
   .catch((error) => console.error('MongoDB connection error:', error));
 

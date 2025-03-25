@@ -34,6 +34,7 @@ router.post('/register', async (req, res) => {
     let token;
     try {
       token = generateToken(user._id);
+      console.log('JWT_SECRET:', process.env.JWT_SECRET);
     } catch (tokenError) {
       console.error('Token generation error:', tokenError);
       return res.status(500).json({ 

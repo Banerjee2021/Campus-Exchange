@@ -1,8 +1,13 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import path, { dirname } from 'path' ; 
+import { fileURLToPath } from 'url' ; 
 
 // Load environment variables
-dotenv.config();
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+console.log('JWT_SECRET:', process.env.JWT_SECRET); // Debugging
 
 export const generateToken = (userId) => {
   // Ensure JWT_SECRET is defined
