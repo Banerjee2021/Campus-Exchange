@@ -1,0 +1,9 @@
+Create a backend for the following details: 
+1. For Signup when the user enter its details will stored in the MongoDB server. If the user already exists it will throw an error that the user already exists.
+
+2. For Login when user details are added it will check the details in the mongodb server, if the user enters details wrongfully then throw a invalid details error. If the user successfully enters the details and clicks on log in it the login link the navbar will change to Profile link in the frontend and when the user clicks on the Profile Link it will be redirected to the User Profile dashboard displaying all its details, messages and a log out option. When clicked on sign out the user will be redirected to the home page and the Profile link in the navbar will again change to Login link.
+
+3. Also when a user is no logged in they cannot buy, post or sell any items in the marketplace and in the library they will not have the option to download or upload any file.
+
+4. User will only be accessed to delete its own account and delete its own content uploaded either on Marketplace or library. Other than that user has no special access. 
+

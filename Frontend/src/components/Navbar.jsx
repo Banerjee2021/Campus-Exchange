@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ShoppingBag, User } from 'lucide-react';
+import { BookOpen, ShoppingBag, User,Home } from 'lucide-react';
 
 const Navbar = () => {
   return (
@@ -16,6 +16,10 @@ const Navbar = () => {
           </div>
           
           <div className="flex items-center space-x-8">
+          <Link to="/" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
+              <Home size={20} />
+              <span>Home</span>
+            </Link>
             <Link to="/marketplace" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
               <ShoppingBag size={20} />
               <span>Marketplace</span>
