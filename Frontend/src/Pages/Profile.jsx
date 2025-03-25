@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 
 const Profile = () => {
-  const { user, deleteAccount } = useAuth();
+  const { user, deleteAccount, logout, loading } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Only redirect if loading is complete and no user is found
+    if (!loading && !user) {
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
 
   const handleDeleteAccount = async () => {
     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
@@ -17,16 +25,39 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="spinner">Loading...</div>
+      </div>
+    );
+  }
+
+  // If no user after loading, don't render anything
   if (!user) {
-    navigate('/login');
     return null;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Profile</h1>
+    <div className="container mx-auto px-4 py-8 mt-16">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+        <button 
+          onClick={handleLogout}
+          className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+        >
+          <LogOut size={20} />
+          <span>Logout</span>
+        </button>
+      </div>
       
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
         <div className="space-y-6">
           <div>
             <h3 className="text-lg font-medium text-gray-900">Personal Information</h3>
@@ -52,7 +83,17 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="mt-8 bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Marketplace Uploads</h3>
+        <p className="text-gray-500">No uploads yet.</p>
+      </div>
+
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Library Uploads</h3>
+        <p className="text-gray-500">No uploads yet.</p>
+      </div>
+
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Messages</h3>
         <p className="text-gray-500">No messages yet.</p>
       </div>

@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
       fetchUserProfile();
     } else {
       setLoading(false);
+      setUser(null);
     }
   }, []);
 
@@ -21,10 +22,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.get('http://localhost:5000/api/users/profile');
       setUser(response.data);
+      setLoading(false);
     } catch (error) {
+      console.error('Error fetching profile:', error);
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
-    } finally {
+      setUser(null);
       setLoading(false);
     }
   };
@@ -42,23 +45,16 @@ export const AuthProvider = ({ children }) => {
       setUser(user);
       return { success: true };
     } catch (error) {
+      console.error('Login error:', error.response?.data);
       return {
         success: false,
         message: error.response?.data?.message || 'Login failed'
       };
     }
   };
-  const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-  
-  // In your register method
+
   const register = async (userData) => {
     try {
-      console.log('Sending registration data:', userData);
       const response = await axios.post('http://localhost:5000/api/auth/register', userData);
       
       const { token, user } = response.data;
@@ -67,9 +63,7 @@ export const AuthProvider = ({ children }) => {
       setUser(user);
       return { success: true };
     } catch (error) {
-      console.error('Full registration error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
+      console.error('Registration error:', error.response?.data);
       return {
         success: false,
         message: error.response?.data?.message || 'Registration failed'

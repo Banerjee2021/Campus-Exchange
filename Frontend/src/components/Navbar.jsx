@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ShoppingBag, User,Home } from 'lucide-react';
+import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,7 +24,7 @@ const Navbar = () => {
           </div>
           
           <div className="flex items-center space-x-8">
-          <Link to="/" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
+            <Link to="/" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
               <Home size={20} />
               <span>Home</span>
             </Link>
@@ -28,10 +36,50 @@ const Navbar = () => {
               <BookOpen size={20} />
               <span>Library</span>
             </Link>
-            <Link to="/login" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
-              <User size={20} />
-              <span>Login</span>
-            </Link>
+            
+            {user ? (
+              <div 
+                className="relative"
+                onMouseEnter={() => setIsProfileDropdownOpen(true)}
+                onMouseLeave={() => setIsProfileDropdownOpen(false)}
+              >
+                <Link 
+                  to="/profile" 
+                  className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors"
+                >
+                  <User size={20} />
+                  <span>Profile</span>
+                  <ChevronDown 
+                    size={16} 
+                    className={`transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} 
+                  />
+                </Link>
+                
+                {isProfileDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-50">
+                    <Link 
+                      to="/profile" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                    >
+                      <User size={16} />
+                      <span>Go to Profile</span>
+                    </Link>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                    >
+                      <LogOut size={16} />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
+                <User size={20} />
+                <span>Login</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

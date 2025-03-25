@@ -37,6 +37,8 @@ const Signup = () => {
   
     const result = await register(formData);
     if (result.success) {
+      // Show success alert
+      alert('Account successfully created!');
       navigate('/profile');
     } else {
       setError(result.message);
