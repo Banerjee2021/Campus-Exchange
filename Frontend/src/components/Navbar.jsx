@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +17,22 @@ import {
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isMouseOverProfile, setIsMouseOverProfile] = useState(false);
+
+  useEffect(() => {
+    let timeoutId;
+    if (!isMouseOverProfile) {
+      timeoutId = setTimeout(() => {
+        setIsProfileDropdownOpen(false);
+      }, 750);
+    }
+    
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isMouseOverProfile]);
 
   return (
     <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
@@ -47,8 +63,13 @@ const Navbar = () => {
             {user ? (
               <div 
                 className="relative"
-                onMouseEnter={() => setIsProfileDropdownOpen(true)}
-                onMouseLeave={() => setIsProfileDropdownOpen(false)}
+                onMouseEnter={() => {
+                  setIsProfileDropdownOpen(true);
+                  setIsMouseOverProfile(true);
+                }}
+                onMouseLeave={() => {
+                  setIsMouseOverProfile(false);
+                }}
               >
                 <Link 
                   to="/profile" 
@@ -58,7 +79,7 @@ const Navbar = () => {
                   <span>Profile</span>
                   <ChevronDown 
                     size={16} 
-                    className={`transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} 
+                    className={`transition-transform duration-450 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} 
                   />
                 </Link>
                 
