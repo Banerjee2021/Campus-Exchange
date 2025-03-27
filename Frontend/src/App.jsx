@@ -14,6 +14,7 @@ const Profile = React.lazy(() => import('./pages/Profile.jsx'));
 const PostItem = React.lazy(() => import('./pages/PostItem.jsx'));
 const PostLibraryItem = React.lazy(() => import('./pages/PostLibraryItem.jsx'));
 const ProductDetails = React.lazy(() => import('./pages/ProductDetails.jsx'));
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -24,11 +25,21 @@ function App() {
           <Suspense fallback={<LoadingScreen />}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/marketplace" element={<Marketplace />} />
+
+              <Route path="/marketplace" element={
+              <ProtectedRoute>
+                <Marketplace />
+              </ProtectedRoute>
+            }  />
               <Route path="/library" element={<Library />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/profile" element={<Profile />} />
+              
+              <Route path="/profile"  element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }  />
               <Route path="/post-item" element={<PostItem />} />
               <Route path="/post-library-item" element={<PostLibraryItem />} />
               <Route path="/product/:id" element={<ProductDetails />} />

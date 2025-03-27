@@ -90,6 +90,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // New method to check authentication
+  const checkAuth = () => {
+    const token = localStorage.getItem('token');
+    return !!token && user !== null;
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -97,7 +103,8 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       logout,
-      deleteAccount
+      deleteAccount,
+      checkAuth  // Add this to the context
     }}>
       {children}
     </AuthContext.Provider>
