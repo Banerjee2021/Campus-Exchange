@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Loader2, Search, Plus, X } from 'lucide-react';
+import { MessageCircle, Loader2, Search, Plus, X, User, Mail, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
@@ -108,7 +108,7 @@ const Marketplace = () => {
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Marketplace</h1>
         <p className="text-gray-600 mb-8">Discover amazing products from our community</p>
 
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-4 mb-16">
           <div className="flex-1">
             <div className="relative">
               <input
@@ -131,18 +131,19 @@ const Marketplace = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProducts.length === 0 ? (
-            <p className="text-gray-500 text-center col-span-full">No products found</p>
-          ) : (
-            filteredProducts.map((product, index) => (
-              <div
-                key={product._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                style={{
-                  opacity: 0,
-                  animation: `fadeIn 0.5s ease-out ${index * 0.1}s forwards`
-                }}
-              >
+        {filteredProducts.length === 0 ? (
+          <p className="text-gray-500 text-center col-span-full">No products found</p>
+        ) : (
+          filteredProducts.map((product, index) => (
+            <div
+              key={product._id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              style={{
+                opacity: 0,
+                animation: `fadeIn 0.5s ease-out ${index * 0.1}s forwards`
+              }}
+            >
+
                 <div 
                   className="aspect-w-16 aspect-h-9 cursor-zoom-in"
                   onClick={() => handleImageZoom(product.imageUrl)}
@@ -153,6 +154,7 @@ const Marketplace = () => {
                     className="w-full h-48 object-cover"
                   />
                 </div>
+
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-2">
                     <h2 className="text-xl font-semibold text-gray-900">{product.productName}</h2>
@@ -160,15 +162,34 @@ const Marketplace = () => {
                       {product.productType}
                     </span>
                   </div>
+
+                  <div className="mb-4 border-t pt-4">
+                  <div className="flex items-center mb-2">
+                    <User className="mr-2 text-gray-500" size={20} />
+                    <span className="text-sm text-gray-700">{product.sellerName}</span>
+                  </div>
+                  <div className="flex items-center mb-4">
+                    <Mail className="mr-2 text-gray-500" size={20} />
+                    <span className="text-sm text-gray-700">{product.sellerEmail}</span>
+                  </div>
+
+                  <div className="flex items-center mb-4">
+                    <Phone className="mr-2 text-gray-500" size={20} />
+                    <span className="text-sm text-gray-700">{product.sellerContact}</span>
+                  </div>
+                </div>
+                
+
                   <p className="text-gray-600 mb-4">{product.description}</p>
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-2xl font-bold text-gray-900">
                       ${product.price.toFixed(2)}
                     </span>
                   </div>
+
                   <button
                     onClick={() => handleMessageSeller(product.sellerContact)}
-                    className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700 transition-colors"
+                    className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700 transition-colors cursor-pointer"
                   >
                     <MessageCircle size={20} />
                     Message Seller
