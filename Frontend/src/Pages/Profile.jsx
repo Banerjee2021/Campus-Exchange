@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
@@ -17,26 +17,28 @@ import {
 const Profile = () => {
   const { user, deleteAccount, logout, loading } = useAuth();
   const navigate = useNavigate();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Only redirect if loading is complete and no user is found
     if (!loading && !user) {
       navigate('/login');
     }
   }, [user, loading, navigate]);
 
   const handleDeleteAccount = async () => {
-    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+    try {
       const result = await deleteAccount();
       if (result.success) {
         navigate('/');
       } else {
-        alert(result.message);
+        setError(result.message);
       }
+    } catch (err) {
+      setError('Failed to delete account. Please try again.');
     }
   };
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -45,7 +47,6 @@ const Profile = () => {
     );
   }
 
-  // If no user after loading, don't render anything
   if (!user) {
     return null;
   }
@@ -80,6 +81,12 @@ const Profile = () => {
         </AlertDialog>
       </div>
       
+      {error && (
+        <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+          {error}
+        </div>
+      )}
+
       <div className="bg-white shadow rounded-lg p-6 mb-6">
         <div className="space-y-6">
           <div>
@@ -122,12 +129,32 @@ const Profile = () => {
       </div>
 
       <div className="mt-8">
-        <button
-          onClick={handleDeleteAccount}
-          className="text-red-600 hover:text-red-800 font-medium cursor-pointer"
-        >
-          Delete Account
-        </button>
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogTrigger asChild>
+            <button
+              className="text-red-600 hover:text-red-800 font-medium cursor-pointer"
+            >
+              Delete Account
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure you want to delete your account?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleDeleteAccount}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Delete Account
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

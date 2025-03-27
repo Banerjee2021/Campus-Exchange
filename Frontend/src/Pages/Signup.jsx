@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const Signup = () => {
     university: ''
   });
   const [error, setError] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -24,7 +26,6 @@ const Signup = () => {
     e.preventDefault();
     setError('');
   
-    // Client-side validation
     if (!formData.name || !formData.email || !formData.password || !formData.university) {
       setError('All fields are required');
       return;
@@ -37,9 +38,7 @@ const Signup = () => {
   
     const result = await register(formData);
     if (result.success) {
-      // Show success alert
-      alert('Account successfully created!');
-      navigate('/profile');
+      setShowSuccess(true);
     } else {
       setError(result.message);
     }
@@ -142,6 +141,25 @@ const Signup = () => {
           </div>
         </form>
       </div>
+
+      <AlertDialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Account Created Successfully!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your account has been created successfully. Click continue to proceed to your profile.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction 
+              onClick={() => navigate('/profile')}
+              className="bg-[#1E90FF] hover:bg-[#1E90FF]/90"
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -1,20 +1,118 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 
 const PostItem = () => {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    productName: '',
+    description: '',
+    productType: 'Books',
+    price: '',
+    sellerContact: '',
+    image: null
+  });
+  const [fileDetails, setFileDetails] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setFormData(prev => ({
+        ...prev,
+        image: file
+      }));
+      setFileDetails(`File: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const formDataToSend = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null) {
+          formDataToSend.append(key, value);
+        }
+      });
+
+      formDataToSend.append('userId', user._id);
+
+      const response = await axios.post('http://localhost:5000/api/products', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+      });
+
+      setShowSuccess(true);
+      setFormData({
+        productName: '',
+        description: '',
+        productType: 'Books',
+        price: '',
+        sellerContact: '',
+        image: null
+      });
+      setFileDetails('');
+    } catch (error) {
+      setError(error.response?.data?.message || 'Error posting product. Please try again.');
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Post New Item</h1>
       
       <div className="max-w-2xl mx-auto">
-        <form className="space-y-6">
+        {error && (
+          <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Form fields remain unchanged */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
               Product Name
             </label>
             <input
               type="text"
-              id="title"
+              id="productName"
+              name="productName"
+              value={formData.productName}
+              onChange={handleInputChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              required
             />
           </div>
 
@@ -24,8 +122,12 @@ const PostItem = () => {
             </label>
             <textarea
               id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
               rows={4}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              required
             />
           </div>
 
@@ -40,25 +142,48 @@ const PostItem = () => {
               <input
                 type="number"
                 id="price"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
                 className="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
                 placeholder="0.00"
+                required
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-              Category
+            <label htmlFor="productType" className="block text-sm font-medium text-gray-700">
+              Product Type
             </label>
             <select
-              id="category"
+              id="productType"
+              name="productType"
+              value={formData.productType}
+              onChange={handleInputChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              required
             >
               <option>Books</option>
               <option>Electronics</option>
               <option>Furniture</option>
               <option>Other</option>
             </select>
+          </div>
+
+          <div>
+            <label htmlFor="sellerContact" className="block text-sm font-medium text-gray-700">
+              Seller Contact Details
+            </label>
+            <input
+              type="text"
+              id="sellerContact"
+              name="sellerContact"
+              value={formData.sellerContact}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              required
+            />
           </div>
 
           <div>
@@ -87,11 +212,21 @@ const PostItem = () => {
                     className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500"
                   >
                     <span>Upload a file</span>
-                    <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                    <input
+                      id="file-upload"
+                      name="file-upload"
+                      type="file"
+                      className="sr-only"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                    />
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
                 <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                {fileDetails && (
+                  <p className="text-sm text-gray-600 mt-2">{fileDetails}</p>
+                )}
               </div>
             </div>
           </div>
@@ -106,6 +241,25 @@ const PostItem = () => {
           </div>
         </form>
       </div>
+
+      <AlertDialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Product Added Successfully!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your product has been successfully added to the marketplace.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction 
+              onClick={() => navigate('/marketplace')}
+              className="bg-[#1E90FF] hover:bg-[#1E90FF]/90"
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const Login = () => {
     password: ''
   });
   const [error, setError] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -24,7 +26,7 @@ const Login = () => {
 
     const result = await login(formData.email, formData.password);
     if (result.success) {
-      navigate('/profile');
+      setShowSuccess(true);
     } else {
       setError(result.message);
     }
@@ -95,6 +97,25 @@ const Login = () => {
           </div>
         </form>
       </div>
+
+      <AlertDialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Login Successful!</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have successfully logged in to your account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction 
+              onClick={() => navigate('/profile')}
+              className="bg-[#1E90FF] hover:bg-[#1E90FF]/90"
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
