@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching profile:', error);
+      // If profile fetch fails, logout the user
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
       setUser(null);
@@ -79,16 +80,41 @@ export const AuthProvider = ({ children }) => {
 
   const deleteAccount = async () => {
     try {
-      await axios.delete('http://localhost:5000/api/users/delete');
-      logout();
-      return { success: true };
+      if (!user || !user._id) {
+        return {
+          success: false,
+          message: 'No user found to delete'
+        };
+      }
+      
+      // Ensure the full route is correct
+      const response = await axios.delete('http://localhost:5000/api/users/delete');
+      
+      // Remove token and user data
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      setUser(null);
+      
+      return { 
+        success: true,
+        message: 'Account successfully deleted.',
+        data: response.data
+      };
     } catch (error) {
+      console.error('Full Deletion Error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
+  
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to delete account'
+        message: error.response?.data?.message || 'Failed to delete account',
+        error: error.response?.data
       };
     }
   };
+
 
   // New method to check authentication
   const checkAuth = () => {

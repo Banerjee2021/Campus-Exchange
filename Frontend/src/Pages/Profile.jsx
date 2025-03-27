@@ -17,7 +17,6 @@ import {
 const Profile = () => {
   const { user, deleteAccount, logout, loading } = useAuth();
   const navigate = useNavigate();
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -129,7 +128,7 @@ const Profile = () => {
       </div>
 
       <div className="mt-8">
-        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialog>
           <AlertDialogTrigger asChild>
             <button
               className="text-red-600 hover:text-red-800 font-medium cursor-pointer"
@@ -141,7 +140,7 @@ const Profile = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure you want to delete your account?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                This action cannot be undone. Your account will be permanently deleted from our servers.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -150,7 +149,7 @@ const Profile = () => {
                 onClick={handleDeleteAccount}
                 className="bg-red-600 hover:bg-red-700"
               >
-                Delete Account
+                Confirm Delete
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
