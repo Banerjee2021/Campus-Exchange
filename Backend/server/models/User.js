@@ -26,13 +26,17 @@ const userSchema = new mongoose.Schema({
     required: [true, 'University is required'],
     trim: true
   },
+  phoneNumber: {
+    type: String,
+    required: [true, 'Phone number is required'],
+    trim: true,
+    match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number']
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
-
-// Rest of the code remains the same...
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {

@@ -8,7 +8,8 @@ const Signup = () => {
     name: '',
     email: '',
     password: '',
-    university: ''
+    university: '',
+    phoneNumber: ''
   });
   const [error, setError] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
@@ -26,13 +27,22 @@ const Signup = () => {
     e.preventDefault();
     setError('');
   
-    if (!formData.name || !formData.email || !formData.password || !formData.university) {
+    // Validate all fields
+    if (!formData.name || !formData.email || !formData.password || !formData.university || !formData.phoneNumber) {
       setError('All fields are required');
       return;
     }
   
+    // Password length validation
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
+      return;
+    }
+  
+    // Phone number validation (basic regex check)
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      setError('Please enter a valid phone number');
       return;
     }
   
@@ -105,6 +115,21 @@ const Signup = () => {
                 onChange={handleChange}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
                 placeholder="University"
+              />
+            </div>
+            <div>
+              <label htmlFor="phoneNumber" className="sr-only">
+                Phone Number
+              </label>
+              <input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                required
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
+                placeholder="Phone Number (e.g., +1234567890)"
               />
             </div>
             <div>

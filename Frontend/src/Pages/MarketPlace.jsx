@@ -168,6 +168,7 @@ const Marketplace = () => {
                     <User className="mr-2 text-gray-500" size={20} />
                     <span className="text-sm text-gray-700">{product.sellerName}</span>
                   </div>
+
                   <div className="flex items-center mb-4">
                     <Mail className="mr-2 text-gray-500" size={20} />
                     <span className="text-sm text-gray-700">{product.sellerEmail}</span>

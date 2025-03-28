@@ -1,13 +1,13 @@
+
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { verifyToken } from '../middleware/auth.js';
 import Product from '../models/Product.js';
-import User from '../models/User.js';  // Import User model to fetch user details
+import User from '../models/User.js';  
 
 const router = express.Router();
 
-// Configure multer for file upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -27,7 +27,7 @@ const upload = multer({
 // Create a new product
 router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
-    const { productName, description, productType, price, sellerContact } = req.body;
+    const { productName, description, productType, price } = req.body;
     
     // Fetch user details
     const user = await User.findById(req.user._id);
@@ -44,7 +44,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
       description,
       productType,
       price: parseFloat(price),
-      sellerContact,
+      sellerContact: user.phoneNumber,  // Use user's phone number
       sellerName: user.name,      // Add seller's name
       sellerEmail: user.email,    // Add seller's email
       imageUrl: `/uploads/${req.file.filename}`,
@@ -58,6 +58,8 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
     res.status(500).json({ message: 'Error creating product', error: error.message });
   }
 });
+
+
 
 // Get all products
 router.get('/', async (req, res) => {

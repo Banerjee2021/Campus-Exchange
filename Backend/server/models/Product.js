@@ -17,15 +17,15 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  sellerContact: {
-    type: String,
-    required: true,
-  },
   sellerName: {
     type: String,
     required: true,
   },
   sellerEmail: {
+    type: String,
+    required: true,
+  },
+  sellerContact: {
     type: String,
     required: true,
   },

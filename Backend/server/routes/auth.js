@@ -7,10 +7,10 @@ const router = express.Router();
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, university } = req.body;
+    const { email, password, name, university, phoneNumber } = req.body;
 
     // Comprehensive logging
-    console.log('Registration attempt:', { email, name, university, password });
+    console.log('Registration attempt:', { email, name, university, phoneNumber });
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -24,6 +24,7 @@ router.post('/register', async (req, res) => {
       email,
       password,
       name,
+      phoneNumber,
       university
     });
 
@@ -50,6 +51,7 @@ router.post('/register', async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        phoneNumber: user.phoneNumber,
         university: user.university
       }
     });
@@ -68,6 +70,7 @@ router.post('/register', async (req, res) => {
     });
   }
 });
+
 
 router.post('/login', async (req, res) => {
   try {

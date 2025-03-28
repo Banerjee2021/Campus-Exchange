@@ -211,11 +211,14 @@ const Profile = () => {
                 <dt className="text-sm font-medium text-gray-500">University</dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.university}</dd>
               </div>
+              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt className="text-sm font-medium text-gray-500">Phone Number</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.phoneNumber}</dd>
+              </div>
             </dl>
           </div>
         </div>
       </div>
-
       <div className="bg-white shadow rounded-lg p-6 mb-6">
         <h3 className="text-lg  text-gray-900 mb-12 font-extrabold">Marketplace Uploads</h3>
         {products.length === 0 ? (

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { IndianRupee } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 
 const PostItem = () => {
@@ -13,7 +14,6 @@ const PostItem = () => {
     description: '',
     productType: 'Books',
     price: '',
-    sellerContact: '',
     image: null
   });
   const [fileDetails, setFileDetails] = useState('');
@@ -71,7 +71,6 @@ const PostItem = () => {
         description: '',
         productType: 'Books',
         price: '',
-        sellerContact: '',
         image: null
       });
       setFileDetails('');
@@ -100,7 +99,6 @@ const PostItem = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Form fields remain unchanged */}
           <div>
             <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
               Product Name
@@ -111,7 +109,7 @@ const PostItem = () => {
               name="productName"
               value={formData.productName}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
               required
             />
           </div>
@@ -126,7 +124,7 @@ const PostItem = () => {
               value={formData.description}
               onChange={handleInputChange}
               rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
               required
             />
           </div>
@@ -137,7 +135,7 @@ const PostItem = () => {
             </label>
             <div className="mt-1 relative rounded-md shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500 sm:text-sm">$</span>
+                <span className="text-gray-500 sm:text-sm"><IndianRupee size={16} /></span>
               </div>
               <input
                 type="number"
@@ -145,7 +143,7 @@ const PostItem = () => {
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                className="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
                 placeholder="0.00"
                 required
               />
@@ -161,7 +159,7 @@ const PostItem = () => {
               name="productType"
               value={formData.productType}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
               required
             >
               <option>Books</option>
@@ -172,22 +170,7 @@ const PostItem = () => {
           </div>
 
           <div>
-            <label htmlFor="sellerContact" className="block text-sm font-medium text-gray-700">
-              Seller Contact Details
-            </label>
-            <input
-              type="text"
-              id="sellerContact"
-              name="sellerContact"
-              value={formData.sellerContact}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700">
               Product Image
             </label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
