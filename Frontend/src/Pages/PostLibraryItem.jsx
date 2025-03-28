@@ -161,7 +161,7 @@ const PostLibraryItem = () => {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-purple-500 focus:ring-purple-500 py-1 px-1"
               required
             />
           </div>
@@ -175,7 +175,7 @@ const PostLibraryItem = () => {
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
             />
           </div>
 
@@ -188,7 +188,7 @@ const PostLibraryItem = () => {
               id="year"
               value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 py-1 px-1"
               required
             />
           </div>
@@ -201,7 +201,7 @@ const PostLibraryItem = () => {
               id="semester"
               value={semester}
               onChange={(e) => setSemester(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
               required
             >
               <option>First(1st)</option>
@@ -276,7 +276,7 @@ const PostLibraryItem = () => {
                       <button
                         type="button"
                         onClick={() => handleRemoveFile(file)}
-                        className="text-red-600 hover:text-red-800 text-sm"
+                        className="text-red-600 hover:text-red-800 text-sm cursor-pointer"
                       >
                         Remove
                       </button>
@@ -290,7 +290,7 @@ const PostLibraryItem = () => {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 cursor-pointer"
             >
               Post to Library
             </button>

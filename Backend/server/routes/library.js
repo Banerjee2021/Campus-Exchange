@@ -239,5 +239,43 @@ router.get('/download/:id', optionalVerifyToken, async (req, res) => {
   }
 });
 
+router.delete('/:id', verifyToken, async (req, res) => {
+  try {
+    const libraryItem = await LibraryItem.findById(req.params.id);
+
+    // Check if library item exists
+    if (!libraryItem) {
+      return res.status(404).json({ message: 'Library item not found' });
+    }
+
+    // Ensure only the owner can delete the item
+    if (libraryItem.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to delete this item' });
+    }
+
+    // Delete associated files
+    if (libraryItem.files && libraryItem.files.length > 0) {
+      libraryItem.files.forEach(filePath => {
+        try {
+          fs.unlinkSync(filePath);
+        } catch (fileDeleteError) {
+          console.error('Error deleting file:', fileDeleteError);
+        }
+      });
+    }
+
+    // Remove the library item from the database
+    await LibraryItem.findByIdAndDelete(req.params.id);
+
+    res.json({ message: 'Library item deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting library item:', error);
+    res.status(500).json({ 
+      message: 'Error deleting library item', 
+      error: error.message 
+    });
+  }
+});
+
 
 export default router;

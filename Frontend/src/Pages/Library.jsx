@@ -78,9 +78,7 @@ const Library = () => {
   };
 
   const filteredItems = libraryItems.filter(item => 
-    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    item.semester.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -103,7 +101,7 @@ const Library = () => {
         {user && (
           <button
             onClick={() => navigate('/post-library-item')}
-            className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors cursor-pointer"
           >
             <Plus size={20} />
             Post
@@ -111,45 +109,66 @@ const Library = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {filteredItems.length === 0 ? (
           <p className="text-gray-500 text-center col-span-full">No files uploaded yet.</p>
         ) : (
-          filteredItems.map((item) => (
+          filteredItems.map((item, index) => (
             <div 
               key={item._id} 
-              className="border border-gray-200 rounded-lg p-4 shadow-md flex flex-col"
+              className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              style={{
+                opacity: 0,
+                animation: `fadeIn 0.5s ease-out ${index * 0.1}s forwards`
+              }}
             >
-              <div className="flex-grow">
-                <h2 className="text-xl font-semibold mb-2">{item.title}</h2>
-                <p className="text-gray-600 mb-2">{item.description}</p>
-                <div className="text-sm text-gray-500 space-y-1">
-                  <p>Uploaded by: {item.userName}</p>
-                  <p>Year: {item.year}</p>
-                  <p>Semester: {item.semester}</p>
-                  <p>Uploaded on: {formatDate(item.createdAt)}</p>
+              <div className="p-6 flex flex-col h-full">
+                <div className="flex-grow">
+                  <h2 className="text-xl font-semibold mb-2">{item.title}</h2>
+                  <p className="text-gray-600 mb-2">{item.description}</p>
+                  <div className="text-sm text-gray-500 space-y-1">
+                    <p>Uploaded by: {item.userName}</p>
+                    <p>Year: {item.year}</p>
+                    <p>Semester: {item.semester}</p>
+                    <p>Uploaded on: {formatDate(item.createdAt)}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-between mt-4">
-                <button 
-                  onClick={() => handleView(item._id)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  <Eye size={16} />
-                  View
-                </button>
-                <button 
-                  onClick={() => handleDownload(item._id, item.files[0])}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                >
-                  <Download size={16} />
-                  Download
-                </button>
+                <div className="flex justify-between mt-4">
+                  <button 
+                    onClick={() => handleView(item._id)}
+                    className="flex-1 mr-2 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors cursor-pointer"
+                  >
+                    <Eye size={16} />
+                    View
+                  </button>
+                  <button 
+                    onClick={() => handleDownload(item._id, item.files[0])}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors cursor-pointer"
+                  >
+                    <Download size={16} />
+                    Download
+                  </button>
+                </div>
               </div>
             </div>
           ))
         )}
       </div>
+
+      <style>
+        {`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

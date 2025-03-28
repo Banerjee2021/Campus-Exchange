@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Trash2, User, Mail, Phone, X } from 'lucide-react';
+import { LogOut, Trash2, User, Mail, Phone, X, FileText } from 'lucide-react';
 import axios from 'axios';
 import { 
   AlertDialog, 
@@ -13,7 +13,7 @@ import {
   AlertDialogHeader, 
   AlertDialogTitle, 
   AlertDialogTrigger 
-} from '../components/ui/alert-dialog' ; 
+} from '../components/ui/alert-dialog';
 
 const ZoomedImage = ({ imageUrl, productName, onClose }) => {
   return (
@@ -49,12 +49,15 @@ const Profile = () => {
   const [products, setProducts] = useState([]);
   const [productToDelete, setProductToDelete] = useState(null);
   const [zoomedImage, setZoomedImage] = useState(null);
+  const [libraryItems, setLibraryItems] = useState([]);
+  const [libraryItemToDelete, setLibraryItemToDelete] = useState(null);
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/login');
     } else if (user) {
       fetchUserProducts();
+      fetchUserLibraryItems();
     }
   }, [user, loading, navigate]);
 
@@ -97,6 +100,36 @@ const Profile = () => {
 
   const openDeleteConfirmation = (productId) => {
     setProductToDelete(productId);
+  };
+  const fetchUserLibraryItems = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/library/all');
+      // Filter library items to only show those uploaded by the current user
+      const userLibraryItems = response.data.filter(item => item.userEmail === user.email);
+      setLibraryItems(userLibraryItems);
+    } catch (error) {
+      console.error('Error fetching library items:', error);
+      setError('Failed to fetch library items');
+    }
+  };
+
+
+  const handleDeleteLibraryItem = async () => {
+    if (!libraryItemToDelete) return;
+
+    try {
+      await axios.delete(`http://localhost:5000/api/library/${libraryItemToDelete}`);
+      // Remove the deleted library item from the local state
+      setLibraryItems(libraryItems.filter(item => item._id !== libraryItemToDelete));
+      setLibraryItemToDelete(null);
+    } catch (error) {
+      console.error('Error deleting library item:', error);
+      setError('Failed to delete library item');
+    }
+  };
+
+  const openLibraryItemDeleteConfirmation = (libraryItemId) => {
+    setLibraryItemToDelete(libraryItemId);
   };
 
 
@@ -278,8 +311,68 @@ const Profile = () => {
       </div>
 
       <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Library Uploads</h3>
-        <p className="text-gray-500">No uploads yet.</p>
+        <h3 className="text-lg font-extrabold text-gray-900 mb-6">Library Uploads</h3>
+        {libraryItems.length === 0 ? (
+          <p className="text-gray-500">No library uploads yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {libraryItems.map((item, index) => (
+              <div
+                key={item._id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                style={{
+                  opacity: 0,
+                  animation: `fadeIn 0.5s ease-out ${index * 0.1}s forwards`
+                }}
+              >
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center space-x-3">
+                      <FileText className="text-purple-500" size={24} />
+                      <h2 className="text-xl font-semibold text-gray-900">{item.title}</h2>
+                    </div>
+                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                      {item.semester}
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 mb-4 line-clamp-3">{item.description}</p>
+
+                  <div className="flex gap-4 mt-4">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button 
+                          onClick={() => openLibraryItemDeleteConfirmation(item._id)}
+                          className="flex-1 flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={16} />
+                          Delete File
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure you want to delete this file?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. The file will be permanently deleted from our servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={handleDeleteLibraryItem}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Delete File
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="bg-white shadow rounded-lg p-6 mb-6">
