@@ -87,10 +87,8 @@ export const AuthProvider = ({ children }) => {
         };
       }
       
-      // Ensure the full route is correct
       const response = await axios.delete('http://localhost:5000/api/users/delete');
       
-      // Remove token and user data
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
       setUser(null);
@@ -115,7 +113,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
   // New method to check authentication
   const checkAuth = () => {
     const token = localStorage.getItem('token');
@@ -130,7 +127,7 @@ export const AuthProvider = ({ children }) => {
       register,
       logout,
       deleteAccount,
-      checkAuth  // Add this to the context
+      checkAuth
     }}>
       {children}
     </AuthContext.Provider>
