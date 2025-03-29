@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Search, Plus, Eye, Download } from 'lucide-react';
+import { Search, Plus, Eye, Download, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../components/ui/alert-dialog';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -17,9 +27,11 @@ const formatDate = (dateString) => {
 
 const Library = () => {
   const navigate = useNavigate();
-  const { user, checkAuth } = useAuth();
+  const { user, checkAuth, isAdmin } = useAuth();
   const [libraryItems, setLibraryItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     fetchLibraryItems();
@@ -74,6 +86,35 @@ const Library = () => {
     } catch (error) {
       console.error('Error downloading file:', error);
       alert('Unable to download file. Please ensure you are logged in.');
+    }
+  };
+
+  const openDeleteDialog = (item) => {
+    setItemToDelete(item);
+    setDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setItemToDelete(null);
+  };
+
+  const handleDelete = async () => {
+    if (!itemToDelete) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5000/api/library/${itemToDelete._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Remove item from the state
+      setLibraryItems(libraryItems.filter(item => item._id !== itemToDelete._id));
+      closeDeleteDialog();
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      alert('Unable to delete file. Please try again.');
+      closeDeleteDialog();
     }
   };
 
@@ -149,11 +190,40 @@ const Library = () => {
                     Download
                   </button>
                 </div>
+                
+                {/* Admin Delete Button */}
+                {isAdmin && (
+                  <div className="mt-2">
+                    <button
+                      onClick={() => openDeleteDialog(item)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
+                    >
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete the file?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action is irreversible and will delete the file permanently from the server.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={closeDeleteDialog}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <style>
         {`
