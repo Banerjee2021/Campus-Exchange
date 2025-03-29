@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
@@ -7,6 +6,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       setLoading(false);
       setUser(null);
+      setIsAdmin(false);
     }
   }, []);
 
@@ -23,6 +24,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.get('http://localhost:5000/api/users/profile');
       setUser(response.data);
+      setIsAdmin(response.data.isAdmin || false);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -30,28 +32,48 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
       setUser(null);
+      setIsAdmin(false);
       setLoading(false);
     }
   };
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      // Try to login as a regular user first
+      const userResponse = await axios.post('http://localhost:5000/api/auth/login', {
         email,
         password
       });
       
-      const { token, user } = response.data;
+      const { token, user } = userResponse.data;
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
+      setIsAdmin(user.isAdmin || false);
       return { success: true };
-    } catch (error) {
-      console.error('Login error:', error.response?.data);
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Login failed'
-      };
+    } catch (userError) {
+      // If user login fails, try admin login
+      try {
+        const adminResponse = await axios.post('http://localhost:5000/api/admin/login', {
+          email,
+          password
+        });
+        
+        const { token, admin } = adminResponse.data;
+        const adminUser = { ...admin, isAdmin: true };
+        
+        localStorage.setItem('token', token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        setUser(adminUser);
+        setIsAdmin(true);
+        return { success: true };
+      } catch (adminError) {
+        console.error('Login error:', userError.response?.data, adminError.response?.data);
+        return {
+          success: false,
+          message: userError.response?.data?.message || 'Login failed'
+        };
+      }
     }
   };
 
@@ -63,6 +85,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
+      setIsAdmin(false);
       return { success: true };
     } catch (error) {
       console.error('Registration error:', error.response?.data);
@@ -77,6 +100,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
+    setIsAdmin(false);
   };
 
   const deleteAccount = async () => {
@@ -93,6 +117,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
       setUser(null);
+      setIsAdmin(false);
       
       return { 
         success: true,
@@ -124,6 +149,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{
       user,
       loading,
+      isAdmin,
       login,
       register,
       logout,

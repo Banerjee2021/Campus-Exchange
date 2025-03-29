@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Trash2, User, Mail, Phone, X, FileText } from 'lucide-react';
+import { LogOut, Trash2, User, Mail, Phone, X, FileText, Shield } from 'lucide-react';
 import axios from 'axios';
 import { 
   AlertDialog, 
@@ -41,9 +41,8 @@ const ZoomedImage = ({ imageUrl, productName, onClose }) => {
   );
 };
 
-
 const Profile = () => {
-  const { user, deleteAccount, logout, loading } = useAuth();
+  const { user, deleteAccount, logout, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [products, setProducts] = useState([]);
@@ -51,7 +50,7 @@ const Profile = () => {
   const [zoomedImage, setZoomedImage] = useState(null);
   const [libraryItems, setLibraryItems] = useState([]);
   const [libraryItemToDelete, setLibraryItemToDelete] = useState(null);
-
+  
   useEffect(() => {
     if (!loading && !user) {
       navigate('/login');
@@ -98,9 +97,14 @@ const Profile = () => {
     }
   };
 
+  const handleImageZoom = (imageUrl) => {
+    setZoomedImage(imageUrl);
+  };
+
   const openDeleteConfirmation = (productId) => {
     setProductToDelete(productId);
   };
+  
   const fetchUserLibraryItems = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/library/all');
@@ -112,7 +116,6 @@ const Profile = () => {
       setError('Failed to fetch library items');
     }
   };
-
 
   const handleDeleteLibraryItem = async () => {
     if (!libraryItemToDelete) return;
@@ -132,7 +135,6 @@ const Profile = () => {
     setLibraryItemToDelete(libraryItemId);
   };
 
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -147,8 +149,7 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 mt-16">
-
-    {zoomedImage && (
+      {zoomedImage && (
         <ZoomedImage 
           imageUrl={`http://localhost:5000${zoomedImage}`}
           productName="Zoomed Product"
@@ -157,7 +158,7 @@ const Profile = () => {
       )}
 
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{isAdmin ? 'Admin Profile' : 'Profile'}</h1>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button 
@@ -201,26 +202,43 @@ const Profile = () => {
             <dl className="divide-y divide-gray-200">
               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt className="text-sm font-medium text-gray-500">Full name</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.name}</dd>
+                <dd className={`mt-1 text-sm ${isAdmin ? 'font-bold text-dodgerblue' : 'text-gray-900'} sm:mt-0 sm:col-span-2`}>
+                  {user.name}
+                </dd>
               </div>
               <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt className="text-sm font-medium text-gray-500">Email address</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.email}</dd>
+                <dd className={`mt-1 text-sm ${isAdmin ? 'font-bold text-dodgerblue' : 'text-gray-900'} sm:mt-0 sm:col-span-2`}>
+                  {user.email}
+                </dd>
               </div>
-              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt className="text-sm font-medium text-gray-500">University</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.university}</dd>
-              </div>
-              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt className="text-sm font-medium text-gray-500">Phone Number</dt>
-                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.phoneNumber}</dd>
-              </div>
+              {isAdmin ? (
+                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="text-sm font-medium text-gray-500">Admin</dt>
+                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-bold text-dodgerblue">Yes</dd>
+                </div>
+              ) : (
+                <div>
+
+                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                    <dt className="text-sm font-medium text-gray-500">Phone Number</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.phoneNumber}</dd>
+                  </div>
+
+                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                    <dt className="text-sm font-medium text-gray-500">University</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.university}</dd>
+                  </div>
+
+                </div>
+              )}
             </dl>
           </div>
         </div>
       </div>
+      
       <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h3 className="text-lg  text-gray-900 mb-12 font-extrabold">Marketplace Uploads</h3>
+        <h3 className="text-lg text-gray-900 mb-12 font-extrabold">Marketplace Uploads</h3>
         {products.length === 0 ? (
           <p className="text-gray-500">No uploads yet.</p>
         ) : (
@@ -423,6 +441,9 @@ const Profile = () => {
               opacity: 1;
               transform: translateY(0);
             }
+          }
+          .text-dodgerblue {
+            color: #1E90FF;
           }
         `}
       </style>

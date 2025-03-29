@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import User from '../models/User.js';
+import Admin from '../models/Admin.js';
 
 // Load environment variables
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -34,18 +35,29 @@ export const verifyToken = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Fetch user details to include name and email
-    const user = await User.findById(decoded.id).select('-password');
+    // First try to find a regular user
+    let user = await User.findById(decoded.id).select('-password');
+    let isAdmin = false;
     
+    // If not a regular user, check if it's an admin
     if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+      const admin = await Admin.findById(decoded.id).select('-password');
+      
+      if (!admin) {
+        return res.status(401).json({ message: 'User not found' });
+      }
+      
+      // It's an admin
+      user = admin;
+      isAdmin = true;
     }
 
     // Attach user details to the request
     req.user = {
       _id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      isAdmin: isAdmin
     };
 
     next();
@@ -67,15 +79,28 @@ export const optionalVerifyToken = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Find user
-    const user = await User.findById(decoded.userId).select('-password');
+    // Try to find user first
+    let user = await User.findById(decoded.id).select('-password');
+    let isAdmin = false;
+    
+    // If not found, try to find admin
+    if (!user) {
+      const admin = await Admin.findById(decoded.id).select('-password');
+      if (admin) {
+        user = admin;
+        isAdmin = true;
+      }
+    }
 
     if (!user) {
       return next();
     }
 
     // Attach user to request object
-    req.user = user;
+    req.user = {
+      ...user._doc,
+      isAdmin
+    };
     next();
   } catch (error) {
     // If token is invalid, continue without user context

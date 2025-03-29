@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut } from 'lucide-react';
+import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { 
   AlertDialog, 
@@ -15,7 +15,7 @@ import {
 } from './ui/alert-dialog';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isMouseOverProfile, setIsMouseOverProfile] = useState(false);
 
@@ -75,8 +75,8 @@ const Navbar = () => {
                   to="/profile" 
                   className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors"
                 >
-                  <User size={20} />
-                  <span>Profile</span>
+                  {isAdmin ? <Shield size={20} /> : <User size={20} />}
+                  <span>{isAdmin ? 'Admin Profile' : 'Profile'}</span>
                   <ChevronDown 
                     size={16} 
                     className={`transition-transform duration-450 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} 
@@ -89,8 +89,8 @@ const Navbar = () => {
                       to="/profile" 
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
                     >
-                      <User size={16} />
-                      <span>Go to Profile</span>
+                      {isAdmin ? <Shield size={16} /> : <User size={16} />}
+                      <span>{isAdmin ? 'Admin Dashboard' : 'Go to Profile'}</span>
                     </Link>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
