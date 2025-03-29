@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut, Shield } from 'lucide-react';
+import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut, Shield, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { 
   AlertDialog, 
@@ -59,6 +59,14 @@ const Navbar = () => {
               <BookOpen size={20} />
               <span>Library</span>
             </Link>
+            
+            {/* Messages link that only shows for logged-in users */}
+            {user && (
+              <Link to="/messages" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
+                <MessageCircle size={20} />
+                <span>Messages</span>
+              </Link>
+            )}
             
             {user ? (
               <div 

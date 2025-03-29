@@ -74,13 +74,30 @@ const Marketplace = () => {
     }
   };
 
-  const handleMessageSeller = (sellerContact) => {
+  const handleMessageSeller = (product) => {
     // Check authentication before messaging
     if (!checkAuth()) {
       navigate('/login');
       return;
     }
-    console.log(`Messaging seller at: ${sellerContact}`);
+    
+    // Navigate to messaging page with seller and product info
+    navigate('/messages', { 
+      state: { 
+        seller: {
+          name: product.sellerName,
+          email: product.sellerEmail,
+          contact: product.sellerContact,
+          id: product.sellerId || 'unknown'
+        },
+        product: {
+          id: product._id,
+          name: product.productName,
+          price: product.price,
+          imageUrl: product.imageUrl
+        }
+      } 
+    });
   };
 
   const handleImageZoom = (imageUrl) => {
@@ -240,7 +257,7 @@ const Marketplace = () => {
                   </div>
 
                   <button
-                    onClick={() => handleMessageSeller(product.sellerContact)}
+                    onClick={() => handleMessageSeller(product)}
                     className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700 transition-colors cursor-pointer mb-2"
                   >
                     <MessageCircle size={20} />

@@ -14,6 +14,7 @@ const Profile = React.lazy(() => import('./pages/Profile.jsx'));
 const PostItem = React.lazy(() => import('./pages/PostItem.jsx'));
 const PostLibraryItem = React.lazy(() => import('./pages/PostLibraryItem.jsx'));
 const ProductDetails = React.lazy(() => import('./pages/ProductDetails.jsx'));
+const MessagingSystem = React.lazy(() => import('./components/MessagingSystem.jsx'));
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
               <Route path="/post-item" element={<PostItem />} />
               <Route path="/post-library-item" element={<PostLibraryItem />} />
               <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/messages" element = {<MessagingSystem />} />
             </Routes>
           </Suspense>
         </main>

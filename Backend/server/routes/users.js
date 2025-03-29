@@ -38,6 +38,33 @@ router.get('/profile', verifyToken, async (req, res) => {
   }
 });
 
+
+router.get('/search', verifyToken, async (req, res) => {
+  try {
+    const { query } = req.query;
+    
+    if (!query || query.length < 2) {
+      return res.status(400).json({ message: 'Search query must be at least 2 characters' });
+    }
+    
+    // Search for users by name or email
+    const users = await User.find({
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { email: { $regex: query, $options: 'i' } }
+      ],
+      _id: { $ne: req.user._id } // Exclude the current user
+    })
+    .select('name email university phoneNumber')
+    .limit(10);
+    
+    res.json(users);
+  } catch (error) {
+    console.error('User search error:', error);
+    res.status(500).json({ message: 'Server error searching users' });
+  }
+});
+
 // Delete user account
 router.delete('/delete', verifyToken, async (req, res) => {
   try {
