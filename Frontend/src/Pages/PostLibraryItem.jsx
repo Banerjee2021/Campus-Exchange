@@ -204,14 +204,14 @@ const PostLibraryItem = () => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
               required
             >
-              <option>First(1st)</option>
-              <option>Second(2nd)</option>
-              <option>Third(3rd)</option>
-              <option>Fourth(4th)</option>
-              <option>Fifth(5th)</option>
-              <option>Sixth(6th)</option>
-              <option>Seventh(7th)</option>
-              <option>Eighth(8th)</option>
+              <option className = "cursor-pointer">First(1st)</option>
+              <option className = "cursor-pointer">Second(2nd)</option>
+              <option className = "cursor-pointer">Third(3rd)</option>
+              <option className = "cursor-pointer">Fourth(4th)</option>
+              <option className = "cursor-pointer">Fifth(5th)</option>
+              <option className = "cursor-pointer">Sixth(6th)</option>
+              <option className = "cursor-pointer">Seventh(7th)</option>
+              <option className = "cursor-pointer">Eighth(8th)</option>
             </select>
           </div>
 
