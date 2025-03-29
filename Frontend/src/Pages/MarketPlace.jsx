@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Loader2, Search, Plus, X, User, Mail, Phone } from 'lucide-react';
+import { MessageCircle, Loader2, Search, Plus, X, User, Mail, Phone, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../components/ui/alert-dialog';
 
 const ZoomedImage = ({ imageUrl, productName, onClose }) => {
   return (
@@ -32,11 +42,13 @@ const ZoomedImage = ({ imageUrl, productName, onClose }) => {
 
 const Marketplace = () => {
   const navigate = useNavigate();
-  const { checkAuth } = useAuth();
+  const { checkAuth, isAdmin } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [zoomedImage, setZoomedImage] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
     // Check authentication before fetching products
@@ -80,6 +92,30 @@ const Marketplace = () => {
     setZoomedImage(imageUrl);
   };
 
+  const handleDeleteClick = (productId) => {
+    setProductToDelete(productId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!productToDelete) return;
+    
+    try {
+      await axios.delete(`http://localhost:5000/api/products/${productToDelete}`);
+      // Update the products list after successful deletion
+      setProducts(products.filter(product => product._id !== productToDelete));
+      // Close the dialog
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      // Handle error appropriately
+      if (error.response && error.response.status === 401) {
+        navigate('/login');
+      }
+    }
+  };
+
   const filteredProducts = products.filter(product =>
     product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -103,6 +139,21 @@ const Marketplace = () => {
           onClose={() => setZoomedImage(null)}
         />
       )}
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete the product?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action is irreversible and this product will be permanently deleted from the server.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProduct}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Marketplace</h1>
@@ -190,11 +241,21 @@ const Marketplace = () => {
 
                   <button
                     onClick={() => handleMessageSeller(product.sellerContact)}
-                    className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700 transition-colors cursor-pointer"
+                    className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700 transition-colors cursor-pointer mb-2"
                   >
                     <MessageCircle size={20} />
                     Message Seller
                   </button>
+                  
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleDeleteClick(product._id)}
+                      className="w-full bg-red-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-red-700 transition-colors cursor-pointer mt-2"
+                    >
+                      <Trash2 size={20} />
+                      Delete Product
+                    </button>
+                  )}
                 </div>
               </div>
             ))

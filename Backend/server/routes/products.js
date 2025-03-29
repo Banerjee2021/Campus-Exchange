@@ -1,4 +1,3 @@
-
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -82,8 +81,6 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   }
 });
 
-
-
 // Get all products
 router.get('/', async (req, res) => {
   try {
@@ -103,20 +100,34 @@ router.get('/user', verifyToken, async (req, res) => {
   }
 });
 
-// Also add a route to delete a specific product
+// Modified route to delete a specific product - allowing admins to delete any product
 router.delete('/:productId', verifyToken, async (req, res) => {
   try {
-    const product = await Product.findOneAndDelete({ 
-      _id: req.params.productId, 
-      userId: req.user._id 
-    });
+    // Check if the user is an admin
+    if (req.user.isAdmin) {
+      // If admin, allow deletion of any product
+      const product = await Product.findByIdAndDelete(req.params.productId);
+      
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      
+      return res.json({ message: 'Product deleted successfully' });
+    } else {
+      // If regular user, only allow deletion of their own products
+      const product = await Product.findOneAndDelete({ 
+        _id: req.params.productId, 
+        userId: req.user._id 
+      });
 
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found or you do not have permission to delete' });
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found or you do not have permission to delete' });
+      }
+
+      return res.json({ message: 'Product deleted successfully' });
     }
-
-    res.json({ message: 'Product deleted successfully' });
   } catch (error) {
+    console.error('Error deleting product:', error);
     res.status(500).json({ message: 'Error deleting product', error: error.message });
   }
 });
