@@ -5,6 +5,7 @@ import path from 'path';
 import { verifyToken } from '../middleware/auth.js';
 import Product from '../models/Product.js';
 import User from '../models/User.js';  
+import Admin from '../models/Admin.js';
 
 const router = express.Router();
 
@@ -29,14 +30,35 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
     const { productName, description, productType, price } = req.body;
     
-    // Fetch user details
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
     if (!req.file) {
       return res.status(400).json({ message: 'Product image is required' });
+    }
+
+    let sellerContact = '';
+    let sellerName = '';
+    let sellerEmail = '';
+
+    // Check if the request is from an admin or a regular user
+    if (req.user.isAdmin) {
+      // For admin users
+      const admin = await Admin.findById(req.user._id);
+      if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
+      }
+      
+      sellerName = admin.name;
+      sellerEmail = admin.email;
+      sellerContact = 'Admin'; // Or any default value for admin contact
+    } else {
+      // For regular users
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      sellerName = user.name;
+      sellerEmail = user.email;
+      sellerContact = user.phoneNumber || '';
     }
 
     const product = new Product({
@@ -44,11 +66,12 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
       description,
       productType,
       price: parseFloat(price),
-      sellerContact: user.phoneNumber,  // Use user's phone number
-      sellerName: user.name,      // Add seller's name
-      sellerEmail: user.email,    // Add seller's email
+      sellerContact,
+      sellerName,
+      sellerEmail,
       imageUrl: `/uploads/${req.file.filename}`,
-      userId: req.user._id
+      userId: req.user._id,
+      postedByAdmin: req.user.isAdmin || false
     });
 
     await product.save();

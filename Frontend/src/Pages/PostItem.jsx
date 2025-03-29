@@ -7,7 +7,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescript
 
 const PostItem = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
     productName: '',
@@ -56,7 +56,13 @@ const PostItem = () => {
         }
       });
 
+      // Always include userId
       formDataToSend.append('userId', user._id);
+      
+      // If admin, add admin flag
+      if (isAdmin) {
+        formDataToSend.append('postedByAdmin', true);
+      }
 
       const response = await axios.post('http://localhost:5000/api/products', formDataToSend, {
         headers: {
@@ -76,6 +82,7 @@ const PostItem = () => {
       setFileDetails('');
     } catch (error) {
       setError(error.response?.data?.message || 'Error posting product. Please try again.');
+      console.error('Product posting error:', error.response?.data || error.message);
     }
   };
 
@@ -99,6 +106,8 @@ const PostItem = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Form fields remain the same */}
+          {/* ... */}
           <div>
             <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
               Product Name

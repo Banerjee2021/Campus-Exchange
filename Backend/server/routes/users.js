@@ -1,19 +1,40 @@
 import express from 'express';
 import User from '../models/User.js';
 import { verifyToken } from '../middleware/auth.js'
+import Admin from '../models/Admin.js';
 
 const router = express.Router();
 
 // Get user profile
-router.get('/profile', async (req, res) => {
+router.get('/profile', verifyToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    // Check if we're dealing with admin or regular user based on the flag set in verifyToken middleware
+    if (req.user.isAdmin) {
+      // Fetch admin profile
+      const admin = await Admin.findById(req.user._id).select('-password');
+      
+      if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
+      }
+      
+      // Return admin data with isAdmin flag
+      return res.json({
+        ...admin._doc,
+        isAdmin: true
+      });
+    } else {
+      // Fetch regular user profile
+      const user = await User.findById(req.user._id).select('-password');
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      res.json(user);
     }
-    res.json(user);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Profile fetch error:', error);
+    res.status(500).json({ message: 'Server error fetching profile' });
   }
 });
 
