@@ -17,7 +17,7 @@ import {
 const ZoomedImage = ({ imageUrl, productName, onClose }) => {
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.88)] bg-opacity-80 p-4"
       onClick={onClose}
     >
       <div 
