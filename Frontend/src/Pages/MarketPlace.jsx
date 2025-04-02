@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Loader2, Search, Plus, X, User, Mail, Phone, Trash2 } from 'lucide-react';
+import { MessageCircle, Loader2, Search, Plus, X, User, Mail, Phone, Trash2, LucideIndianRupee } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { 
@@ -176,12 +176,12 @@ const Marketplace = () => {
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Marketplace</h1>
         <p className="text-gray-600 mb-8">Discover amazing products from our community</p>
 
-        <div className="flex gap-4 mb-16">
-          <div className="flex-1">
+        <div className="flex flex-col md:flex-row gap-4 mb-16">
+          <div className="flex-1 w-full mb-4 md:mb-0">
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search products by category (e.g. Electronics, Books, etc.)"
+                placeholder="Search products ...."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -191,7 +191,7 @@ const Marketplace = () => {
           </div>
           <button
             onClick={() => navigate('/post-item')}
-            className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors cursor-pointer md:w-auto w-full"
           >
             <Plus size={20} />
             Post Item
@@ -251,8 +251,9 @@ const Marketplace = () => {
 
                   <p className="text-gray-600 mb-4">{product.description}</p>
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-2xl font-bold text-gray-900">
-                      ${product.price.toFixed(2)}
+                    <span className="text-2xl font-bold text-gray-900 flex flex-row items-center">
+                      <LucideIndianRupee size={20} />
+                      {product.price.toFixed(2)}
                     </span>
                   </div>
 
