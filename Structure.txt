@@ -1,0 +1,61 @@
+CAMPUS-EXCHANGE/
+├── Backend/
+│   ├── node_modules/
+│   ├── server/
+│   │   ├── middleware/
+│   │   │   └── auth.js
+│   │   ├── models/
+│   │   │   ├── Admin.js
+│   │   │   ├── LibraryItem.js
+│   │   │   ├── Product.js
+│   │   │   └── User.js
+│   │   └── routes/
+│   │       ├── admin.js
+│   │       ├── auth.js
+│   │       ├── library.js
+│   │       ├── products.js
+│   │       └── users.js
+│   ├── uploads/
+│   ├── .env
+│   ├── Backend PRompt.txt
+│   ├── index.js
+│   ├── package-lock.json
+│   ├── package.json
+│   └── seedAdmin.js
+├── Frontend/
+│   ├── node_modules/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ui/
+│   │   │   ├── Footer.jsx
+│   │   │   ├── LoadingScreen.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   └── UserSearch.jsx
+│   │   ├── context/
+│   │   │   ├── .env
+│   │   │   └── AuthContext.jsx
+│   │   ├── lib/
+│   │   │   └── utils.js
+│   │   └── Pages/
+│   │       ├── About.jsx
+│   │       ├── Home.jsx
+│   │       ├── Library.jsx
+│   │       ├── Login.jsx
+│   │       ├── MarketPlace.jsx
+│   │       ├── PostItem.jsx
+│   │       ├── PostLibraryItem.jsx
+│   │       ├── ProductDetails.jsx
+│   │       ├── Profile.jsx
+│   │       └── Signup.jsx
+│   ├── .gitignore
+│   ├── App.jsx
+│   ├── eslint.config.js
+│   ├── index.css
+│   ├── index.html
+│   ├── main.jsx
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── README.md
+│   └── vite.config.js

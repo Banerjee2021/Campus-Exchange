@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut, Shield, MessageCircle } from 'lucide-react';
+import { BookOpen, ShoppingBag, User, Home, ChevronDown, LogOut, Shield, MessageCircle, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { 
   AlertDialog, 
@@ -60,11 +60,11 @@ const Navbar = () => {
               <span>Library</span>
             </Link>
             
-            {/* Messages link that only shows for logged-in users */}
-            {user && (
-              <Link to="/messages" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
-                <MessageCircle size={20} />
-                <span>Messages</span>
+            {/* Admin Management link that only shows for admin users */}
+            {user && isAdmin && (
+              <Link to="/admin/manage" className="flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors">
+                <Users size={20} />
+                <span>Manage Users</span>
               </Link>
             )}
             

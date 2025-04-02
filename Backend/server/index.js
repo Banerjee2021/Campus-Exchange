@@ -9,7 +9,6 @@ import productRoutes from './routes/products.js';
 import userRoutes from './routes/users.js';
 import libraryRoutes from './routes/library.js';
 import adminRoutes from './routes/admin.js';
-import messagingRoutes from './routes/messaging.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config();
@@ -27,7 +26,6 @@ app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/library', libraryRoutes);  
 app.use('/api/admin', adminRoutes);
-app.use('/api/messaging', messagingRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/marketplace')
