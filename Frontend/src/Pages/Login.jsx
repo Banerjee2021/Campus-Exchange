@@ -108,7 +108,7 @@ const Login = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction 
-              onClick={() => navigate('/profile')}
+              onClick={() => navigate('/')}
               className="bg-[#1E90FF] hover:bg-[#1E90FF]/90"
             >
               Continue

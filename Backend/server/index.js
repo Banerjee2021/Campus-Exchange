@@ -36,6 +36,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/marketpla
 import { mkdir } from 'fs/promises';
 try {
   await mkdir(path.join(__dirname, '../uploads/library'), { recursive: true });
+  await mkdir(path.join(__dirname, '../uploads/marketplace'), { recursive: true });
 } catch (err) {
   console.error('Error creating uploads directory:', err);
 }

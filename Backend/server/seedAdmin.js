@@ -10,9 +10,9 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Admin details
 const adminData = {
-  name: 'Susanta Kumar Sutar',
-  email: 'susu@gmail.com',
-  password: 'susususu'
+  name: 'Pratyush Nayak',
+  email: 'pratyushn567@gmail.com',
+  password: 'pratik0912'
 };
 
 // Connect to MongoDB

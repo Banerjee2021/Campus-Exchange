@@ -168,13 +168,13 @@ const PostItem = () => {
               name="productType"
               value={formData.productType}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1 cursor-pointer"
               required
             >
-              <option>Books</option>
-              <option>Electronics</option>
-              <option>Furniture</option>
-              <option>Other</option>
+              <option className = "cursor-pointer">Books</option>
+              <option className = "cursor-pointer">Electronics</option>
+              <option className = "cursor-pointer">Furniture</option>
+              <option className = "cursor-pointer">Other</option>
             </select>
           </div>
 

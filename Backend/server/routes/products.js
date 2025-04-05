@@ -10,7 +10,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, 'uploads/marketplace/');
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -68,7 +68,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
       sellerContact,
       sellerName,
       sellerEmail,
-      imageUrl: `/uploads/${req.file.filename}`,
+      imageUrl: `/uploads/marketplace/${req.file.filename}`,
       userId: req.user._id,
       postedByAdmin: req.user.isAdmin || false
     });

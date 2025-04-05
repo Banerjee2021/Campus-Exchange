@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Search, Plus, Eye, Download, Trash2 } from "lucide-react";
+import { Search, Plus, Eye, Download, Trash2, FileText } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import {
   AlertDialog,
@@ -14,15 +14,14 @@ import {
   AlertDialogTitle,
 } from "../components/ui/alert-dialog";
 
+// Updated formatting function that returns date in DD/MM/YYYY format
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+console.log("Item created at:", item._id, item.createdAt, typeof item.createdAt);
 };
 
 const Library = () => {
@@ -32,6 +31,9 @@ const Library = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [currentDocumentUrl, setCurrentDocumentUrl] = useState(null);
+  const [currentDocumentName, setCurrentDocumentName] = useState("");
 
   useEffect(() => {
     fetchLibraryItems();
@@ -57,21 +59,71 @@ const Library = () => {
   const handleView = async (itemId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:5000/api/library/view/${itemId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob",
-        }
-      );
+      const item = libraryItems.find((item) => item._id === itemId);
+      if (!item) {
+        throw new Error("Item not found");
+      }
 
-      const file = new Blob([response.data], { type: "application/pdf" });
-      const fileURL = URL.createObjectURL(file);
-      window.open(fileURL, "_blank");
+      const fileName = item.files[0];
+      const fileExtension = fileName.split(".").pop().toLowerCase();
+
+      // For PDF files and other files that browsers can handle natively
+      if (
+        fileExtension === "pdf" ||
+        ["jpg", "jpeg", "png", "gif", "svg"].includes(fileExtension)
+      ) {
+        const response = await axios.get(
+          `http://localhost:5000/api/library/view/${itemId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            responseType: "blob",
+          }
+        );
+
+        const contentType = getContentType(fileExtension);
+        const file = new Blob([response.data], { type: contentType });
+        const fileURL = URL.createObjectURL(file);
+        window.open(fileURL, "_blank");
+      }
+      // For DOC/DOCX files, we can implement a custom viewer that uses Office Online or LibreOffice Online
+      else if (["doc", "docx"].includes(fileExtension)) {
+        // Method 1: Convert file to PDF on server-side and show PDF
+        // This requires backend changes
+        alert(
+          `For viewing ${fileExtension.toUpperCase()} files, please download the file and open it with Microsoft Word or use an online document viewer.`
+        );
+      } else {
+        // For other file types, recommend downloading
+        alert(
+          `File type .${fileExtension} cannot be previewed directly. Please download the file to view it.`
+        );
+      }
     } catch (error) {
       console.error("Error viewing file:", error);
       alert("Unable to view file. Please ensure you are logged in.");
     }
+  };
+
+  // Helper function to determine the content type based on file extension
+  const getContentType = (extension) => {
+    const contentTypes = {
+      pdf: "application/pdf",
+      doc: "application/msword",
+      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      txt: "text/plain",
+      csv: "text/csv",
+      xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      xls: "application/vnd.ms-excel",
+      ppt: "application/vnd.ms-powerpoint",
+      pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+      gif: "image/gif",
+      svg: "image/svg+xml",
+    };
+
+    return contentTypes[extension] || "application/octet-stream";
   };
 
   const handleDownload = async (itemId, filename) => {
@@ -191,11 +243,33 @@ const Library = () => {
                     <p>Semester: {item.semester}</p>
                     <p>
                       Uploaded on:{" "}
-                      {new Date(item.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {(() => {
+                        try {
+                          const date = new Date(item.createdAt);
+                          if (isNaN(date.getTime())) {
+                            return "N/A"; // Invalid date
+                          }
+                          const day = String(date.getDate()).padStart(2, "0");
+                          const month = String(date.getMonth() + 1).padStart(
+                            2,
+                            "0"
+                          );
+                          const year = date.getFullYear();
+                          return `${day}/${month}/${year}`;
+                        } catch (e) {
+                          console.error(
+                            "Date parsing error:",
+                            e,
+                            item.createdAt
+                          );
+                          return "N/A";
+                        }
+                      })()}
+                    </p>
+
+                    <p className="flex items-center">
+                      <FileText size={14} className="mr-1" />
+                      File type: {item.files[0].split(".").pop().toUpperCase()}
                     </p>
                   </div>
                 </div>
