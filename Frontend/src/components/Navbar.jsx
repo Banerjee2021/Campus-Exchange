@@ -67,6 +67,12 @@ const Navbar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobileMenuOpen]);
 
+  // Custom logout handler to close dropdown
+  const handleLogout = () => {
+    setIsProfileDropdownOpen(false);
+    logout();
+  };
+
   return (
     <>
       <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
@@ -153,7 +159,7 @@ const Navbar = () => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={logout}>
+                            <AlertDialogAction onClick={handleLogout}>
                               Continue
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -265,10 +271,7 @@ const Navbar = () => {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      logout();
-                    }}>
+                    <AlertDialogAction onClick={handleLogout}>
                       Continue
                     </AlertDialogAction>
                   </AlertDialogFooter>
