@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import LoadingScreen from "./components/LoadingScreen";
 import AdminManagement from "./components/AdminManagement.jsx";
 import Messages from "./Pages/Messages.jsx";
-import Inbox from './Pages/Inbox.jsx';
+import Inbox from "./Pages/Inbox.jsx";
 
 // Lazy load pages
 const Home = React.lazy(() => import("./Pages/Home.jsx"));
@@ -39,8 +39,22 @@ function App() {
               <Route path="/library" element={<Library />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/inbox" element={<Inbox />} />
+              <Route
+                path="/messages"
+                element={
+                  <ProtectedRoute>
+                    <Messages />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/inbox"
+                element={
+                  <ProtectedRoute>
+                    <Inbox />
+                  </ProtectedRoute>
+                }
+              />
 
               <Route
                 path="/profile"
