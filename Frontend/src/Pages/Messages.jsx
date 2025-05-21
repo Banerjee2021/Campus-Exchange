@@ -15,10 +15,12 @@ const Messages = () => {
   const { seller } = state || {};
   const { user } = useAuth();
   const messagesEndRef = useRef(null);
+  const messageContainerRef = useRef(null);
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
 
   // Redirect if no seller info is provided
   useEffect(() => {
@@ -34,12 +36,31 @@ const Messages = () => {
     }
   }, [user]);
 
-  // Scroll to bottom of messages
+  // Check if we should scroll to bottom (if user is near bottom)
+  const checkShouldScrollToBottom = () => {
+    if (messageContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messageContainerRef.current;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      // If user is within 100px of bottom, enable auto-scroll
+      setShouldScrollToBottom(distanceFromBottom < 100);
+    }
+  };
+
+  // Scroll to bottom of messages when needed
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (messagesEndRef.current && shouldScrollToBottom) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, shouldScrollToBottom]);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const container = messageContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkShouldScrollToBottom);
+      return () => container.removeEventListener('scroll', checkShouldScrollToBottom);
+    }
+  }, []);
 
   // Fetch existing messages and listen for new ones
   useEffect(() => {
@@ -52,6 +73,13 @@ const Messages = () => {
         const res = await axios.get(`http://localhost:5000/api/messages/conversation/${seller.email}`);
         setMessages(res.data);
         setLoading(false);
+        
+        // Set initial scroll position after messages load
+        setTimeout(() => {
+          if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+          }
+        }, 100);
       } catch (err) {
         console.error('Fetch error:', err);
         setLoading(false);
@@ -84,6 +112,9 @@ const Messages = () => {
     if (!text.trim()) return;
 
     try {
+      // Force scroll to bottom when sending a new message
+      setShouldScrollToBottom(true);
+      
       // Save message to database
       const response = await axios.post('http://localhost:5000/api/messages', {
         recipientEmail: seller.email,
@@ -105,11 +136,28 @@ const Messages = () => {
     }
   };
 
+  // Handle key press events
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        // Shift+Enter creates a new line
+        return;
+      } else {
+        // Just Enter sends the message
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+  };
+
   return (
     <div className = "p-6 max-w-2xl mx-auto">
       <h2 className = "text-xl font-bold mb-4">Chat with {seller?.name || seller?.email}</h2>
 
-      <div className = "bg-gray-100 p-4 rounded h-[400px] overflow-y-auto mb-4">
+      <div 
+        ref={messageContainerRef}
+        className = "bg-gray-100 p-4 rounded h-[400px] overflow-y-auto mb-4"
+      >
         {loading ? (
           <div className = "flex items-center justify-center h-full">
             <div className = "animate-spin rounded-full h-8 w-8 border-b-2 border-purple-700"></div>
@@ -144,12 +192,13 @@ const Messages = () => {
       </div>
 
       <div className = "flex gap-2">
-        <input
+        <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className = "flex-1 border rounded px-3 py-2"
-          placeholder="Type your message..."
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          onKeyDown={handleKeyPress}
+          className = "flex-1 border rounded px-3 py-2 resize-none"
+          placeholder="Type your message... (Enter to send, Shift+Enter for new line)"
+          rows="2"
         />
         <button
           onClick={sendMessage}

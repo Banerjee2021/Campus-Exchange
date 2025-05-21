@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   BookOpen,
   ShoppingBag,
@@ -32,6 +32,7 @@ const Navbar = () => {
   const [isMouseOverProfile, setIsMouseOverProfile] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
+  const navigate = useNavigate();
 
   // Close profile dropdown after delay when mouse leaves
   useEffect(() => {
@@ -88,6 +89,14 @@ const Navbar = () => {
     logout();
   };
 
+  // Custom navigation handler for Inbox to ensure proper scroll behavior
+  const handleInboxClick = (e) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    setIsProfileDropdownOpen(false);
+    navigate('/inbox');
+  };
+
   return (
     <>
       <nav className = "bg-white shadow-lg fixed w-full top-0 z-50">
@@ -137,13 +146,14 @@ const Navbar = () => {
               )}
 
               {user && (
-                <Link
-                  to="/inbox"
-                  className = "flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors"
+                <a
+                  href="/inbox"
+                  onClick={handleInboxClick}
+                  className = "flex items-center space-x-1 text-gray-700 hover:text-purple-600 transition-colors cursor-pointer"
                 >
                   <MessageCircle size={20} />
                   <span>Inbox</span>
-                </Link>
+                </a>
               )}
 
               {user ? (
@@ -175,7 +185,7 @@ const Navbar = () => {
                     <div className = "absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-50">
                       <Link
                         to="/profile"
-                        className = "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        className = "flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         {isAdmin ? <Shield size={16} /> : <User size={16} />}
                         <span>
@@ -276,14 +286,14 @@ const Navbar = () => {
           </Link>
 
           {user && (
-            <Link
-              to="/inbox"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className = "flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors py-2 border-b border-gray-100"
+            <a
+              href="/inbox"
+              onClick={handleInboxClick}
+              className = "flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors py-2 border-b border-gray-100 cursor-pointer"
             >
               <MessageCircle size={20} />
               <span>Inbox</span>
-            </Link>
+            </a>
           )}
 
           {user && isAdmin && (

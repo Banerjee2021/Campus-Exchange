@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 import { Loader2 } from 'lucide-react';
 
@@ -13,6 +14,21 @@ const Inbox = () => {
   const { user } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const inboxTopRef = useRef(null);
+
+  // Scroll to top of the page when navigating to Inbox
+  useEffect(() => {
+    if (inboxTopRef.current) {
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        window.scrollTo({ 
+          top: inboxTopRef.current.offsetTop - 80, // Account for navbar height
+          behavior: 'auto'
+        });
+      }, 100);
+    }
+  }, [location]);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -56,17 +72,17 @@ const Inbox = () => {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Inbox</h2>
+    <div ref={inboxTopRef} className = "p-6 max-w-3xl mx-auto">
+      <h2 className = "text-2xl font-bold mb-4">Inbox</h2>
       
       {loading ? (
-        <div className="flex justify-center items-center h-40">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <div className = "flex justify-center items-center h-40">
+          <Loader2 className = "w-8 h-8 animate-spin text-purple-600" />
         </div>
       ) : conversations.length === 0 ? (
-        <p className="text-gray-500">No conversations yet.</p>
+        <p className = "text-gray-500">No conversations yet.</p>
       ) : (
-        <div className="space-y-3">
+        <div className = "space-y-3">
           {conversations.map((conversation) => {
             const { email: otherUserEmail, latestMessage } = conversation;
             const timestamp = new Date(latestMessage?.createdAt).toLocaleString();
@@ -77,17 +93,17 @@ const Inbox = () => {
                 key={otherUserEmail}
                 to="/messages" 
                 state={{ seller: { email: otherUserEmail, name: otherUserEmail } }}
-                className="block"
+                className = "block"
               >
-                <div className="bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition cursor-pointer">
-                  <div className="flex justify-between items-start">
+                <div className = "bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition cursor-pointer">
+                  <div className = "flex justify-between items-start">
                     <div>
-                      <h3 className="font-medium">{otherUserEmail}</h3>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <h3 className = "font-medium">{otherUserEmail}</h3>
+                      <p className = "text-sm text-gray-600 mt-1">
                         {isFromMe ? 'You: ' : ''}{truncateText(latestMessage?.text || 'No messages')}
                       </p>
                     </div>
-                    <div className="text-xs text-gray-500">{timestamp}</div>
+                    <div className = "text-xs text-gray-500">{timestamp}</div>
                   </div>
                 </div>
               </Link>

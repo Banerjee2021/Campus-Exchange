@@ -109,63 +109,63 @@ const AdminManagement = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-24">
-        <div className="text-center">
-          <div className="spinner-border text-purple-600" role="status">
-            <span className="sr-only">Loading...</span>
+      <div className = "container mx-auto px-4 py-24">
+        <div className = "text-center">
+          <div className = "spinner-border text-purple-600" role="status">
+            <span className = "sr-only">Loading...</span>
           </div>
-          <p className="mt-2">Loading user data...</p>
+          <p className = "mt-2">Loading user data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-24">
-      <h1 className="text-3xl font-bold mb-8 text-center">User Management</h1>
+    <div className = "container mx-auto px-4 py-24">
+      <h1 className = "text-3xl font-bold mb-8 text-center">User Management</h1>
       
       {/* Success/Error message */}
       {deleteSuccess && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div className = "bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           {deleteSuccess}
         </div>
       )}
       
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className = "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
       
       {/* Admin list */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center">
-          <Shield className="mr-2" /> Admin Accounts ({admins.length})
+      <div className = "mb-12">
+        <h2 className = "text-2xl font-semibold mb-4 flex items-center">
+          <Shield className = "mr-2" /> Admin Accounts ({admins.length})
         </h2>
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className = "bg-white shadow-md rounded-lg overflow-hidden">
+          <table className = "min-w-full divide-y divide-gray-200">
+            <thead className = "bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className = "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className = "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th className = "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                <th className = "px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className = "bg-white divide-y divide-gray-200">
               {admins.map(admin => (
-                <tr key={admin._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <Shield size={16} className="mr-2 text-purple-600" />
-                      <div className="font-medium text-gray-900">{admin.name}</div>
+                <tr key={admin._id} className = "hover:bg-gray-50">
+                  <td className = "px-6 py-4 whitespace-nowrap">
+                    <div className = "flex items-center">
+                      <Shield size={16} className = "mr-2 text-purple-600" />
+                      <div className = "font-medium text-gray-900">{admin.name}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{admin.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                  <td className = "px-6 py-4 whitespace-nowrap text-gray-500">{admin.email}</td>
+                  <td className = "px-6 py-4 whitespace-nowrap text-gray-500">
                     {new Date(admin.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className = "px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <button
@@ -174,7 +174,7 @@ const AdminManagement = () => {
                           }`}
                           disabled={admin._id === user._id}
                         >
-                          <Trash2 size={16} className="mr-1" />
+                          <Trash2 size={16} className = "mr-1" />
                           Delete
                         </button>
                       </AlertDialogTrigger>
@@ -198,7 +198,7 @@ const AdminManagement = () => {
               ))}
               {admins.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="4" className = "px-6 py-4 text-center text-gray-500">
                     No admin accounts found.
                   </td>
                 </tr>
@@ -210,41 +210,41 @@ const AdminManagement = () => {
       
       {/* User list */}
       <div>
-        <h2 className="text-2xl font-semibold mb-4 flex items-center">
-          <User className="mr-2" /> User Accounts ({users.length})
+        <h2 className = "text-2xl font-semibold mb-4 flex items-center">
+          <User className = "mr-2" /> User Accounts ({users.length})
         </h2>
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className = "bg-white shadow-md rounded-lg overflow-hidden">
+          <table className = "min-w-full divide-y divide-gray-200">
+            <thead className = "bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">University</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className = "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className = "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th className = "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">University</th>
+                <th className = "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                <th className = "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
+                <th className = "px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className = "bg-white divide-y divide-gray-200">
               {users.map(user => (
-                <tr key={user._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <User size={16} className="mr-2 text-gray-500" />
-                      <div className="font-medium text-gray-900">{user.name}</div>
+                <tr key={user._id} className = "hover:bg-gray-50">
+                  <td className = "px-6 py-4 whitespace-nowrap">
+                    <div className = "flex items-center">
+                      <User size={16} className = "mr-2 text-gray-500" />
+                      <div className = "font-medium text-gray-900">{user.name}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{user.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{user.university || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{user.phoneNumber || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                  <td className = "px-6 py-4 whitespace-nowrap text-gray-500">{user.email}</td>
+                  <td className = "px-6 py-4 whitespace-nowrap text-gray-500">{user.university || '-'}</td>
+                  <td className = "px-6 py-4 whitespace-nowrap text-gray-500">{user.phoneNumber || '-'}</td>
+                  <td className = "px-6 py-4 whitespace-nowrap text-gray-500">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className = "px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <button className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 cursor-pointer">
-                          <Trash2 size={16} className="mr-1" />
+                        <button className = "inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 cursor-pointer">
+                          <Trash2 size={16} className = "mr-1" />
                           Delete
                         </button>
                       </AlertDialogTrigger>
@@ -268,7 +268,7 @@ const AdminManagement = () => {
               ))}
               {users.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="6" className = "px-6 py-4 text-center text-gray-500">
                     No user accounts found.
                   </td>
                 </tr>
