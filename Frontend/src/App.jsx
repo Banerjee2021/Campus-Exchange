@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import LoadingScreen from "./components/LoadingScreen";
 import AdminManagement from "./components/AdminManagement.jsx";
+import Messages from "./Pages/Messages.jsx";
+import Inbox from './Pages/Inbox.jsx';
 
 // Lazy load pages
 const Home = React.lazy(() => import("./Pages/Home.jsx"));
@@ -19,9 +21,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
+      <div className = "min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-grow pt-16">
+        <main className = "flex-grow pt-16">
           <Suspense fallback={<LoadingScreen />}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -37,6 +39,8 @@ function App() {
               <Route path="/library" element={<Library />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/inbox" element={<Inbox />} />
 
               <Route
                 path="/profile"
