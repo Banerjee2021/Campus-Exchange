@@ -253,12 +253,12 @@ const Messages = () => {
               <div
                 key={i}
                 ref={i === messages.length - 1 ? lastMessageRef : null}
-                className={`mb-2 flex ${
+                className = {`mb-2 flex ${
                   msg.senderEmail === user.email ? 'justify-end' : 'justify-start'
                 }`}
               >
                 <div 
-                  className={`px-4 py-2 rounded shadow max-w-xs break-words overflow-wrap-anywhere ${
+                  className = {`px-4 py-2 rounded shadow max-w-xs break-words overflow-wrap-anywhere ${
                     msg.senderEmail === user.email 
                       ? 'bg-purple-100 text-purple-900' 
                       : 'bg-white text-gray-800'
