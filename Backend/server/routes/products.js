@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
+import { put } from '@vercel/blob';
 import { verifyToken } from '../middleware/auth.js';
 import Product from '../models/Product.js';
 import User from '../models/User.js';  
@@ -8,19 +8,20 @@ import Admin from '../models/Admin.js';
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/marketplace/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
-
+// Configure multer to handle file uploads in memory
+const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
   }
 });
 
@@ -60,6 +61,18 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
       sellerContact = user.phoneNumber || '';
     }
 
+    // Upload image to Vercel Blob
+    const timestamp = Date.now();
+    const fileExtension = req.file.originalname.split('.').pop();
+    const filename = `marketplace/${timestamp}-${productName.replace(/[^a-zA-Z0-9]/g, '-')}.${fileExtension}`;
+    
+    const blob = await put(filename, req.file.buffer, {
+      access: 'public',
+      contentType: req.file.mimetype,
+    });
+
+    console.log('Image uploaded to Vercel Blob:', blob.url);
+
     const product = new Product({
       productName,
       description,
@@ -68,7 +81,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
       sellerContact,
       sellerName,
       sellerEmail,
-      imageUrl: `/uploads/marketplace/${req.file.filename}`,
+      imageUrl: blob.url, // Store the Vercel Blob URL
       userId: req.user._id,
       postedByAdmin: req.user.isAdmin || false
     });

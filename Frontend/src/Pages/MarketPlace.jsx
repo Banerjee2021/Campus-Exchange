@@ -34,6 +34,10 @@ const ZoomedImage = ({ imageUrl, productName, onClose }) => {
           src={imageUrl}
           alt={productName}
           className = "max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+          onError={(e) => {
+            e.target.src = '/api/placeholder/400/300';
+            console.error('Failed to load image:', imageUrl);
+          }}
         />
       </div>
     </div>
@@ -151,7 +155,7 @@ const Marketplace = () => {
     <div className = "min-h-screen bg-gray-50">
       {zoomedImage && (
         <ZoomedImage 
-          imageUrl={`http://localhost:5000${zoomedImage}`}
+          imageUrl={zoomedImage}
           productName="Zoomed Product"
           onClose={() => setZoomedImage(null)}
         />
@@ -217,9 +221,13 @@ const Marketplace = () => {
                   onClick={() => handleImageZoom(product.imageUrl)}
                 >
                   <img
-                    src={`http://localhost:5000${product.imageUrl}`}
+                    src={product.imageUrl}
                     alt={product.productName}
                     className = "w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.target.src = '/api/placeholder/400/300';
+                      console.error('Failed to load product image:', product.imageUrl);
+                    }}
                   />
                 </div>
 
