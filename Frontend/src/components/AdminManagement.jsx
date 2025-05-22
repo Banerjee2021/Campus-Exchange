@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Trash2, Shield, User } from 'lucide-react';
+import { Trash2, Shield, User, MessageCircle } from 'lucide-react';
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -51,6 +51,22 @@ const AdminManagement = () => {
 
     fetchData();
   }, [isAdmin, navigate]);
+
+  // Function to initiate chat with a user
+  const handleChatWithUser = (selectedUser) => {
+    // Navigate to messages page with the selected user as seller (for chat purposes)
+    navigate('/messages', {
+      state: {
+        seller: {
+          name: selectedUser.name,
+          email: selectedUser.email,
+          _id: selectedUser._id
+        },
+        // No product info since this is admin-initiated chat
+        product: null
+      }
+    });
+  };
 
   // Function to delete a user
   const handleDeleteUser = async (userId) => {
@@ -241,28 +257,41 @@ const AdminManagement = () => {
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className = "px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button className = "inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 cursor-pointer">
-                          <Trash2 size={16} className = "mr-1" />
-                          Delete
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete User Account</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete {user.name}'s account? This will also remove all their marketplace listings. This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteUser(user._id)}>
+                    <div className = "flex items-center justify-end space-x-2">
+                      {/* Chat Button */}
+                      <button
+                        onClick={() => handleChatWithUser(user)}
+                        className = "inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer transition-colors"
+                        title={`Chat with ${user.name}`}
+                      >
+                        <MessageCircle size={16} className = "mr-1" />
+                        Chat
+                      </button>
+                      
+                      {/* Delete Button */}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button className = "inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 cursor-pointer transition-colors">
+                            <Trash2 size={16} className = "mr-1" />
                             Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete User Account</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete {user.name}'s account? This will also remove all their marketplace listings. This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteUser(user._id)}>
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </td>
                 </tr>
               ))}
