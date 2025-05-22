@@ -20,8 +20,20 @@ const libraryItemSchema = new mongoose.Schema({
     required: [true, 'Semester is required']
   },
   files: [{
-    type: String, // Store file paths
-    trim: true
+    url: {
+      type: String,
+      required: true
+    },
+    filename: {
+      type: String,
+      required: true
+    },
+    size: {
+      type: Number
+    },
+    mimetype: {
+      type: String
+    }
   }],
   user: {
     type: mongoose.Schema.Types.ObjectId,

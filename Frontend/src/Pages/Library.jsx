@@ -14,16 +14,6 @@ import {
   AlertDialogTitle,
 } from "../components/ui/alert-dialog";
 
-// Updated formatting function that returns date in DD/MM/YYYY format
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-console.log("Item created at:", item._id, item.createdAt, typeof item.createdAt);
-};
-
 const Library = () => {
   const navigate = useNavigate();
   const { user, checkAuth, isAdmin } = useAuth();
@@ -31,9 +21,6 @@ const Library = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [viewerOpen, setViewerOpen] = useState(false);
-  const [currentDocumentUrl, setCurrentDocumentUrl] = useState(null);
-  const [currentDocumentName, setCurrentDocumentName] = useState("");
 
   useEffect(() => {
     fetchLibraryItems();
@@ -59,96 +46,70 @@ const Library = () => {
   const handleView = async (itemId) => {
     try {
       const token = localStorage.getItem("token");
-      const item = libraryItems.find((item) => item._id === itemId);
-      if (!item) {
-        throw new Error("Item not found");
+      const config = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : {};
+
+      const response = await axios.get(
+        `http://localhost:5000/api/library/view/${itemId}`,
+        config
+      );
+
+      const { url, filename, mimetype } = response.data;
+      const fileExtension = filename.split(".").pop().toLowerCase();
+
+      // For PDF files, open in new tab for viewing
+      if (fileExtension === "pdf" || mimetype === "application/pdf") {
+        window.open(url, "_blank");
       }
-
-      const fileName = item.files[0];
-      const fileExtension = fileName.split(".").pop().toLowerCase();
-
-      // For PDF files and other files that browsers can handle natively
-      if (
-        fileExtension === "pdf" ||
-        ["jpg", "jpeg", "png", "gif", "svg"].includes(fileExtension)
-      ) {
-        const response = await axios.get(
-          `http://localhost:5000/api/library/view/${itemId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            responseType: "blob",
-          }
-        );
-
-        const contentType = getContentType(fileExtension);
-        const file = new Blob([response.data], { type: contentType });
-        const fileURL = URL.createObjectURL(file);
-        window.open(fileURL, "_blank");
-      }
-      // For DOC/DOCX files, we can implement a custom viewer that uses Office Online or LibreOffice Online
+      // For DOC/DOCX files, show message and offer download
       else if (["doc", "docx"].includes(fileExtension)) {
-        // Method 1: Convert file to PDF on server-side and show PDF
-        // This requires backend changes
-        alert(
-          `For viewing ${fileExtension.toUpperCase()} files, please download the file and open it with Microsoft Word or use an online document viewer.`
+        const userChoice = window.confirm(
+          `${fileExtension.toUpperCase()} files cannot be previewed directly in the browser. Would you like to download the file to view it?`
         );
+        if (userChoice) {
+          handleDownload(itemId, filename);
+        }
       } else {
         // For other file types, recommend downloading
-        alert(
-          `File type .${fileExtension} cannot be previewed directly. Please download the file to view it.`
+        const userChoice = window.confirm(
+          `File type .${fileExtension} cannot be previewed directly. Would you like to download the file to view it?`
         );
+        if (userChoice) {
+          handleDownload(itemId, filename);
+        }
       }
     } catch (error) {
       console.error("Error viewing file:", error);
-      alert("Unable to view file. Please ensure you are logged in.");
+      alert("Unable to view file. Please try again.");
     }
-  };
-
-  // Helper function to determine the content type based on file extension
-  const getContentType = (extension) => {
-    const contentTypes = {
-      pdf: "application/pdf",
-      doc: "application/msword",
-      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      txt: "text/plain",
-      csv: "text/csv",
-      xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      xls: "application/vnd.ms-excel",
-      ppt: "application/vnd.ms-powerpoint",
-      pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      jpg: "image/jpeg",
-      jpeg: "image/jpeg",
-      png: "image/png",
-      gif: "image/gif",
-      svg: "image/svg+xml",
-    };
-
-    return contentTypes[extension] || "application/octet-stream";
   };
 
   const handleDownload = async (itemId, filename) => {
     try {
       const token = localStorage.getItem("token");
+      const config = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : {};
+
       const response = await axios.get(
         `http://localhost:5000/api/library/download/${itemId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob",
-        }
+        config
       );
 
-      const file = new Blob([response.data], {
-        type: "application/octet-stream",
-      });
+      const { url } = response.data;
+      
+      // Create a temporary link element to trigger download
       const link = document.createElement("a");
-      link.href = URL.createObjectURL(file);
+      link.href = url;
       link.download = filename;
+      link.target = "_blank";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
       console.error("Error downloading file:", error);
-      alert("Unable to download file. Please ensure you are logged in.");
+      alert("Unable to download file. Please try again.");
     }
   };
 
@@ -186,8 +147,41 @@ const Library = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return "N/A";
+      }
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (e) {
+      console.error("Date parsing error:", e, dateString);
+      return "N/A";
+    }
+  };
+
+  const getFileExtension = (item) => {
+    if (item.files && item.files.length > 0) {
+      const filename = item.files[0].filename || item.files[0].url;
+      return filename.split(".").pop().toUpperCase();
+    }
+    return "N/A";
+  };
+
+  const getFileName = (item) => {
+    if (item.files && item.files.length > 0) {
+      return item.files[0].filename || "Unknown";
+    }
+    return "No file";
+  };
+
   const filteredItems = libraryItems.filter((item) =>
-    item.semester.toLowerCase().includes(searchTerm.toLowerCase())
+    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.semester.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -241,35 +235,10 @@ const Library = () => {
                     <p>Uploaded by: {item.userName}</p>
                     <p>Year: {item.year}</p>
                     <p>Semester: {item.semester}</p>
-                    <p>
-                      Uploaded on:{" "}
-                      {(() => {
-                        try {
-                          const date = new Date(item.createdAt);
-                          if (isNaN(date.getTime())) {
-                            return "N/A"; // Invalid date
-                          }
-                          const day = String(date.getDate()).padStart(2, "0");
-                          const month = String(date.getMonth() + 1).padStart(
-                            2,
-                            "0"
-                          );
-                          const year = date.getFullYear();
-                          return `${day}/${month}/${year}`;
-                        } catch (e) {
-                          console.error(
-                            "Date parsing error:",
-                            e,
-                            item.createdAt
-                          );
-                          return "N/A";
-                        }
-                      })()}
-                    </p>
-
+                    <p>Uploaded on: {formatDate(item.createdAt)}</p>
                     <p className="flex items-center">
                       <FileText size={14} className="mr-1" />
-                      File type: {item.files[0].split(".").pop().toUpperCase()}
+                      File type: {getFileExtension(item)}
                     </p>
                   </div>
                 </div>
@@ -282,7 +251,7 @@ const Library = () => {
                     View
                   </button>
                   <button
-                    onClick={() => handleDownload(item._id, item.files[0])}
+                    onClick={() => handleDownload(item._id, getFileName(item))}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors cursor-pointer"
                   >
                     <Download size={16} />
