@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -84,26 +83,54 @@ const Inbox = () => {
       ) : (
         <div className = "space-y-3">
           {conversations.map((conversation) => {
-            const { email: otherUserEmail, latestMessage } = conversation;
+            const { email: otherUserEmail, latestMessage, firstMessage } = conversation;
             const timestamp = new Date(latestMessage?.createdAt).toLocaleString();
             const isFromMe = latestMessage?.senderEmail === user?.email;
+            
+            // Check if first message has product info to pass along
+            const hasProductInfo = firstMessage?.productInfo;
             
             return (
               <Link 
                 key={otherUserEmail}
                 to="/messages" 
-                state={{ seller: { email: otherUserEmail, name: otherUserEmail } }}
+                state={{ 
+                  seller: { email: otherUserEmail, name: otherUserEmail },
+                  // Pass product info if it exists in the first message
+                  ...(hasProductInfo && {
+                    product: {
+                      name: firstMessage.productInfo.name,
+                      price: firstMessage.productInfo.price,
+                      imageUrl: firstMessage.productInfo.imageUrl,
+                      type: firstMessage.productInfo.type
+                    }
+                  })
+                }}
                 className = "block"
               >
-                <div className = "bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition cursor-pointer">
-                  <div className = "flex justify-between items-start">
-                    <div>
-                      <h3 className = "font-medium">{otherUserEmail}</h3>
-                      <p className = "text-sm text-gray-600 mt-1">
+                <div className = "bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition cursor-pointer overflow-hidden">
+                  <div className = "flex justify-between items-start gap-4">
+                    <div className = "flex-1 min-w-0">
+                      <div className = "flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className = "font-medium break-words">{otherUserEmail}</h3>
+                        {hasProductInfo && (
+                          <span className = "text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full flex-shrink-0">
+                            Product Inquiry
+                          </span>
+                        )}
+                      </div>
+                      {hasProductInfo && (
+                        <p className = "text-xs text-purple-600 mb-1 font-medium break-words">
+                          About: {firstMessage.productInfo.name}
+                        </p>
+                      )}
+                      <p className = "text-sm text-gray-600 break-words">
                         {isFromMe ? 'You: ' : ''}{truncateText(latestMessage?.text || 'No messages')}
                       </p>
                     </div>
-                    <div className = "text-xs text-gray-500">{timestamp}</div>
+                    <div className = "text-xs text-gray-500 flex-shrink-0 whitespace-nowrap">
+                      {timestamp}
+                    </div>
                   </div>
                 </div>
               </Link>

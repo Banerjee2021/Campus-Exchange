@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { io } from 'socket.io-client';
+import { LucideIndianRupee } from 'lucide-react';
 
 // Socket connection using WebSocket only to avoid polling errors
 const socket = io('http://localhost:5000', {
@@ -12,15 +13,17 @@ const socket = io('http://localhost:5000', {
 const Messages = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { seller } = state || {};
+  const { seller, product } = state || {};
   const { user } = useAuth();
   const messagesEndRef = useRef(null);
   const messageContainerRef = useRef(null);
+  const lastMessageRef = useRef(null);
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+  const [scrollToLastMessage, setScrollToLastMessage] = useState(false);
 
   // Redirect if no seller info is provided
   useEffect(() => {
@@ -46,12 +49,17 @@ const Messages = () => {
     }
   };
 
-  // Scroll to bottom of messages when needed
+  // Scroll to bottom of messages when needed or to last message when sending
   useEffect(() => {
-    if (messagesEndRef.current && shouldScrollToBottom) {
+    if (scrollToLastMessage && lastMessageRef.current) {
+      // Scroll to the top of the last message when user sends a message
+      lastMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setScrollToLastMessage(false);
+    } else if (messagesEndRef.current && shouldScrollToBottom) {
+      // Normal scroll to bottom behavior
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, shouldScrollToBottom]);
+  }, [messages, shouldScrollToBottom, scrollToLastMessage]);
 
   // Add scroll event listener
   useEffect(() => {
@@ -97,6 +105,10 @@ const Messages = () => {
         
       if (isRelevantMessage) {
         setMessages(prev => [...prev, message]);
+        // If it's a message from the other user, scroll to bottom normally
+        if (message.senderEmail !== user.email) {
+          setShouldScrollToBottom(true);
+        }
       }
     };
 
@@ -112,14 +124,27 @@ const Messages = () => {
     if (!text.trim()) return;
 
     try {
-      // Force scroll to bottom when sending a new message
-      setShouldScrollToBottom(true);
+      // Set flag to scroll to the last message (not bottom) when sending
+      setScrollToLastMessage(true);
+      setShouldScrollToBottom(false);
+      
+      // Prepare message data with product info if available
+      const messageData = {
+        recipientEmail: seller.email,
+        text: text.trim(),
+        // Include product info only for the first message if product exists
+        ...(product && messages.length === 0 && {
+          productInfo: {
+            name: product.name,
+            price: product.price,
+            imageUrl: product.imageUrl,
+            type: product.type
+          }
+        })
+      };
       
       // Save message to database
-      const response = await axios.post('http://localhost:5000/api/messages', {
-        recipientEmail: seller.email,
-        text: text.trim()
-      });
+      const response = await axios.post('http://localhost:5000/api/messages', messageData);
 
       // Emit message to recipient via socket
       socket.emit('sendMessage', { 
@@ -156,7 +181,7 @@ const Messages = () => {
 
       <div 
         ref={messageContainerRef}
-        className = "bg-gray-100 p-4 rounded h-[400px] overflow-y-auto mb-4"
+        className = "bg-gray-100 p-4 rounded h-[400px] overflow-y-auto overflow-x-hidden mb-4"
       >
         {loading ? (
           <div className = "flex items-center justify-center h-full">
@@ -171,19 +196,20 @@ const Messages = () => {
             {messages.map((msg, i) => (
               <div
                 key={i}
+                ref={i === messages.length - 1 ? lastMessageRef : null}
                 className={`mb-2 flex ${
                   msg.senderEmail === user.email ? 'justify-end' : 'justify-start'
                 }`}
               >
-                <span 
-                  className={`px-4 py-2 rounded shadow max-w-xs ${
+                <div 
+                  className={`px-4 py-2 rounded shadow max-w-xs break-words overflow-wrap-anywhere ${
                     msg.senderEmail === user.email 
                       ? 'bg-purple-100 text-purple-900' 
                       : 'bg-white text-gray-800'
                   }`}
                 >
                   {msg.text}
-                </span>
+                </div>
               </div>
             ))}
             <div ref={messagesEndRef} />
@@ -191,18 +217,54 @@ const Messages = () => {
         )}
       </div>
 
+      {/* Product Highlight - show if product info is available OR if first message has product info */}
+      {(product || (messages.length > 0 && messages[0].productInfo)) && (
+        <div className = "bg-purple-50 border-l-4 border-purple-500 p-4 mb-4 rounded-r-lg">
+          <div className = "flex items-start space-x-4">
+            {(product?.imageUrl || messages[0]?.productInfo?.imageUrl) && (
+              <img 
+                src={`http://localhost:5000${product?.imageUrl || messages[0]?.productInfo?.imageUrl}`} 
+                alt={product?.name || messages[0]?.productInfo?.name}
+                className = "w-16 h-16 object-cover rounded-lg flex-shrink-0"
+              />
+            )}
+            <div className = "flex-1 min-w-0">
+              <h3 className = "font-semibold text-purple-900 text-lg break-words">
+                {product?.name || messages[0]?.productInfo?.name}
+              </h3>
+              <div className = "flex items-center text-purple-700 font-medium mt-1">
+                <LucideIndianRupee size={16} />
+                <span>{(product?.price || messages[0]?.productInfo?.price)?.toFixed(2)}</span>
+              </div>
+              {(product?.type || messages[0]?.productInfo?.type) && (
+                <span className = "inline-block bg-purple-200 text-purple-800 text-xs px-2 py-1 rounded-full mt-2">
+                  {product?.type || messages[0]?.productInfo?.type}
+                </span>
+              )}
+            </div>
+          </div>
+          <p className = "text-purple-700 text-sm mt-2 italic">
+            {product ? "You're inquiring about this product" : "Product inquiry"}
+          </p>
+        </div>
+      )}
+
       <div className = "flex gap-2">
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyPress}
-          className = "flex-1 border rounded px-3 py-2 resize-none"
-          placeholder="Type your message... (Enter to send, Shift+Enter for new line)"
+          className = "flex-1 border rounded px-3 py-2 resize-none min-w-0"
+          placeholder={
+            product ? `Ask about ${product.name}... (Enter to send, Shift+Enter for new line)` : 
+            (messages.length > 0 && messages[0].productInfo) ? `Ask about ${messages[0].productInfo.name}... (Enter to send, Shift+Enter for new line)` :
+            "Type your message... (Enter to send, Shift+Enter for new line)"
+          }
           rows="2"
         />
         <button
           onClick={sendMessage}
-          className = "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+          className = "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors flex-shrink-0 cursor-pointer"
         >
           Send
         </button>

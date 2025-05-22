@@ -81,13 +81,20 @@ const Marketplace = () => {
       return;
     }
     
-    // Navigate to messaging page with seller info
+    // Navigate to messaging page with seller info and product details
     navigate('/messages', {
       state: {
         seller: {
           name: product.sellerName,
           email: product.sellerEmail,
           contact: product.sellerContact,
+        },
+        product: {
+          name: product.productName,
+          price: product.price,
+          imageUrl: product.imageUrl,
+          description: product.description,
+          type: product.productType
         }
       }
     });
