@@ -28,7 +28,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching profile:', error);
-      // If profile fetch fails, logout the user
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
       setUser(null);

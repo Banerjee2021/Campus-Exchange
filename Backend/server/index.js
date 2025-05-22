@@ -78,9 +78,15 @@ app.use('/api/library', libraryRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/marketplace')
-  .then(() => console.log('Connected to MongoDB'))
+// Connect to MongoDB with campus-exchange database
+console.log('Connecting to MongoDB...');
+console.log('Database URI:', process.env.MONGODB_URI || 'mongodb://localhost:27017/campus-exchange');
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/campus-exchange')
+  .then(() => {
+    console.log('Connected to MongoDB - Database: campus-exchange');
+    console.log('Connected to cluster:', mongoose.connection.name);
+  })
   .catch((error) => console.error('MongoDB connection error:', error));
 
 // Create uploads directory if it doesn't exist
@@ -96,4 +102,5 @@ try {
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Using database: ${mongoose.connection.name || 'campus-exchange'}`);
 });

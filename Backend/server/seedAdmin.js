@@ -15,17 +15,26 @@ const adminData = {
   password: 'pratik0912'
 };
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/marketplace')
+// Connect to MongoDB with campus-exchange database
+console.log('Connecting to MongoDB...');
+console.log('Database URI:', process.env.MONGODB_URI || 'mongodb://localhost:27017/campus-exchange');
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/campus-exchange')
   .then(async () => {
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB - Database: campus-exchange');
+    console.log('Connected to cluster:', mongoose.connection.name);
     
     try {
       // Check if admin already exists
       const existingAdmin = await Admin.findOne({ email: adminData.email });
       
       if (existingAdmin) {
-        console.log('Admin already exists with this email.');
+        console.log('Admin already exists with this email:', adminData.email);
+        console.log('Existing admin details:', {
+          name: existingAdmin.name,
+          email: existingAdmin.email,
+          id: existingAdmin._id
+        });
       } else {
         // Create new admin
         const admin = new Admin(adminData);

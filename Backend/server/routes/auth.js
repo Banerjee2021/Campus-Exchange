@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import { generateToken, verifyToken } from '../middleware/auth.js';
 
@@ -11,6 +12,9 @@ router.post('/register', async (req, res) => {
 
     // Comprehensive logging
     console.log('Registration attempt:', { email, name, university, phoneNumber });
+    console.log('Database connection status:', mongoose.connection.readyState);
+    console.log('Connected to database:', mongoose.connection.name);
+    console.log('Database host:', mongoose.connection.host);
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -30,12 +34,14 @@ router.post('/register', async (req, res) => {
 
     // Save user
     await user.save();
+    console.log('User saved successfully to database:', user._id);
 
     // Generate token
     let token;
     try {
       token = generateToken(user._id);
-      console.log('JWT_SECRET:', process.env.JWT_SECRET);
+      console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+      console.log('Token generated successfully');
     } catch (tokenError) {
       console.error('Token generation error:', tokenError);
       return res.status(500).json({ 
@@ -60,7 +66,8 @@ router.post('/register', async (req, res) => {
     console.error('Registration error:', {
       message: error.message,
       name: error.name,
-      stack: error.stack
+      stack: error.stack,
+      code: error.code
     });
 
     // Send a generic error response
@@ -71,25 +78,37 @@ router.post('/register', async (req, res) => {
   }
 });
 
-
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log('Login attempt for:', email);
+    console.log('Database connection status:', mongoose.connection.readyState);
+    console.log('Connected to database:', mongoose.connection.name);
+    console.log('Database host:', mongoose.connection.host);
+
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('User not found:', email);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
+
+    console.log('User found, checking password...');
 
     // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      console.log('Password mismatch for:', email);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    console.log('Password verified, generating token...');
+
     // Generate token
     const token = generateToken(user._id);
+
+    console.log('Login successful for:', email);
 
     // Return user info and token
     res.json({
@@ -102,7 +121,11 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
     res.status(500).json({ message: 'Server error during login' });
   }
 });
