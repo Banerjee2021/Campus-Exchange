@@ -24,6 +24,62 @@ const Messages = () => {
   const [loading, setLoading] = useState(true);
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
   const [scrollToLastMessage, setScrollToLastMessage] = useState(false);
+  const [productImageBlob, setProductImageBlob] = useState(null);
+
+  // Function to determine the correct image URL (blob or server URL)
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return null;
+    
+    // Check if it's already a blob URL
+    if (imageUrl.startsWith('blob:')) {
+      return imageUrl;
+    }
+    
+    // Check if it's a full URL (http/https)
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+    
+    // Otherwise, construct server URL
+    return `http://localhost:5000${imageUrl}`;
+  };
+
+  // Function to fetch image as blob from server
+  const fetchImageAsBlob = async (imageUrl) => {
+    try {
+      if (!imageUrl || imageUrl.startsWith('blob:')) return imageUrl;
+      
+      const fullUrl = imageUrl.startsWith('http') ? imageUrl : `http://localhost:5000${imageUrl}`;
+      const response = await fetch(fullUrl);
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Error fetching image as blob:', error);
+      return getImageUrl(imageUrl); // Fallback to original URL
+    }
+  };
+
+  // Load product image as blob when component mounts
+  useEffect(() => {
+    const loadProductImage = async () => {
+      const imageUrl = product?.imageUrl || messages[0]?.productInfo?.imageUrl;
+      if (imageUrl) {
+        const blobUrl = await fetchImageAsBlob(imageUrl);
+        setProductImageBlob(blobUrl);
+      }
+    };
+
+    if (product?.imageUrl || (messages.length > 0 && messages[0]?.productInfo?.imageUrl)) {
+      loadProductImage();
+    }
+
+    // Cleanup blob URL when component unmounts
+    return () => {
+      if (productImageBlob && productImageBlob.startsWith('blob:')) {
+        URL.revokeObjectURL(productImageBlob);
+      }
+    };
+  }, [product, messages]);
 
   // Redirect if no seller info is provided
   useEffect(() => {
@@ -221,11 +277,15 @@ const Messages = () => {
       {(product || (messages.length > 0 && messages[0].productInfo)) && (
         <div className = "bg-purple-50 border-l-4 border-purple-500 p-4 mb-4 rounded-r-lg">
           <div className = "flex items-start space-x-4">
-            {(product?.imageUrl || messages[0]?.productInfo?.imageUrl) && (
+            {(productImageBlob || product?.imageUrl || messages[0]?.productInfo?.imageUrl) && (
               <img 
-                src={`http://localhost:5000${product?.imageUrl || messages[0]?.productInfo?.imageUrl}`} 
+                src={productImageBlob || getImageUrl(product?.imageUrl || messages[0]?.productInfo?.imageUrl)}
                 alt={product?.name || messages[0]?.productInfo?.name}
                 className = "w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                onError={(e) => {
+                  // Fallback to server URL if blob fails
+                  e.target.src = getImageUrl(product?.imageUrl || messages[0]?.productInfo?.imageUrl);
+                }}
               />
             )}
             <div className = "flex-1 min-w-0">
