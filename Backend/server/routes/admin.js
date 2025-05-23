@@ -2,7 +2,9 @@ import express from 'express';
 import Admin from '../models/Admin.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
+import LibraryItem from '../models/LibraryItem.js'; // Add LibraryItem import
 import { verifyToken, generateToken } from '../middleware/auth.js';
+import { del } from '@vercel/blob'; // Add del import for blob deletion
 
 const router = express.Router();
 
@@ -121,7 +123,23 @@ router.get('/users', verifyToken, async (req, res) => {
   }
 });
 
-// Delete a user and their marketplace items (protected admin-only route)
+// Helper function to delete files from Vercel Blob
+const deleteFilesFromBlob = async (files) => {
+  const deletionPromises = files.map(async (fileInfo) => {
+    try {
+      if (fileInfo.url && fileInfo.url.includes('vercel-storage.com')) {
+        await del(fileInfo.url);
+        console.log('File deleted from Vercel Blob:', fileInfo.url);
+      }
+    } catch (error) {
+      console.error('Error deleting file from Vercel Blob:', error);
+    }
+  });
+  
+  await Promise.allSettled(deletionPromises);
+};
+
+// Delete a user and their marketplace items and library items (protected admin-only route)
 router.delete('/users/:userId', verifyToken, async (req, res) => {
   try {
     // Check if the request is from an admin
@@ -131,8 +149,42 @@ router.delete('/users/:userId', verifyToken, async (req, res) => {
     
     const { userId } = req.params;
     
+    // Get all products associated with this user to delete their images
+    const userProducts = await Product.find({ userId });
+    
+    // Delete product images from Vercel Blob
+    if (userProducts.length > 0) {
+      const productImageDeletions = userProducts.map(async (product) => {
+        try {
+          if (product.imageUrl && product.imageUrl.includes('vercel-storage.com')) {
+            await del(product.imageUrl);
+            console.log('Product image deleted from Vercel Blob:', product.imageUrl);
+          }
+        } catch (error) {
+          console.error('Error deleting product image from Vercel Blob:', error);
+        }
+      });
+      
+      await Promise.allSettled(productImageDeletions);
+    }
+    
+    // Get all library items associated with this user to delete their files
+    const userLibraryItems = await LibraryItem.find({ user: userId });
+    
+    // Delete library files from Vercel Blob
+    if (userLibraryItems.length > 0) {
+      for (const libraryItem of userLibraryItems) {
+        if (libraryItem.files && libraryItem.files.length > 0) {
+          await deleteFilesFromBlob(libraryItem.files);
+        }
+      }
+    }
+    
     // Delete all products associated with this user
     await Product.deleteMany({ userId });
+    
+    // Delete all library items associated with this user
+    await LibraryItem.deleteMany({ user: userId });
     
     // Delete the user
     const deletedUser = await User.findByIdAndDelete(userId);
@@ -142,10 +194,14 @@ router.delete('/users/:userId', verifyToken, async (req, res) => {
     }
     
     res.json({ 
-      message: 'User and associated products deleted successfully',
+      message: 'User and all associated content (products, library items, and files) deleted successfully',
       deletedUser: {
         _id: deletedUser._id,
         email: deletedUser.email
+      },
+      deletedCounts: {
+        products: userProducts.length,
+        libraryItems: userLibraryItems.length
       }
     });
   } catch (error) {
@@ -169,6 +225,28 @@ router.delete('/:adminId', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'You cannot delete your own admin account' });
     }
     
+    // Get all products posted by this admin to delete their images
+    const adminProducts = await Product.find({ userId: adminId, postedByAdmin: true });
+    
+    // Delete admin product images from Vercel Blob
+    if (adminProducts.length > 0) {
+      const productImageDeletions = adminProducts.map(async (product) => {
+        try {
+          if (product.imageUrl && product.imageUrl.includes('vercel-storage.com')) {
+            await del(product.imageUrl);
+            console.log('Admin product image deleted from Vercel Blob:', product.imageUrl);
+          }
+        } catch (error) {
+          console.error('Error deleting admin product image from Vercel Blob:', error);
+        }
+      });
+      
+      await Promise.allSettled(productImageDeletions);
+    }
+    
+    // Delete all products posted by this admin
+    await Product.deleteMany({ userId: adminId, postedByAdmin: true });
+    
     // Delete the admin
     const deletedAdmin = await Admin.findByIdAndDelete(adminId);
     
@@ -177,11 +255,12 @@ router.delete('/:adminId', verifyToken, async (req, res) => {
     }
     
     res.json({ 
-      message: 'Admin deleted successfully',
+      message: 'Admin and associated products deleted successfully',
       deletedAdmin: {
         _id: deletedAdmin._id,
         email: deletedAdmin.email
-      }
+      },
+      deletedProductsCount: adminProducts.length
     });
   } catch (error) {
     console.error('Delete admin error:', error);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Trash2, User, Mail, Phone, X, FileText, Shield } from 'lucide-react';
+import { LogOut, Trash2, User, Mail, Phone, X, FileText, Shield, Download, Eye } from 'lucide-react';
 import axios from 'axios';
 import { 
   AlertDialog, 
@@ -18,23 +18,23 @@ import {
 const ZoomedImage = ({ imageUrl, productName, onClose }) => {
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 p-4"
+      className = "fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 p-4"
       onClick={onClose}
     >
       <div 
-        className="relative max-w-full max-h-full"
+        className = "relative max-w-full max-h-full"
         onClick={(e) => e.stopPropagation()}
       >
         <button 
           onClick={onClose}
-          className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors cursor-pointer"
+          className = "absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors cursor-pointer"
         >
           <X size={30} />
         </button>
         <img
           src={imageUrl}
           alt={productName}
-          className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+          className = "max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
         />
       </div>
     </div>
@@ -88,7 +88,6 @@ const Profile = () => {
 
     try {
       await axios.delete(`http://localhost:5000/api/products/${productToDelete}`);
-      // Remove the deleted product from the local state
       setProducts(products.filter(product => product._id !== productToDelete));
       setProductToDelete(null);
     } catch (error) {
@@ -108,7 +107,6 @@ const Profile = () => {
   const fetchUserLibraryItems = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/library/all');
-      // Filter library items to only show those uploaded by the current user
       const userLibraryItems = response.data.filter(item => item.userEmail === user.email);
       setLibraryItems(userLibraryItems);
     } catch (error) {
@@ -122,7 +120,6 @@ const Profile = () => {
 
     try {
       await axios.delete(`http://localhost:5000/api/library/${libraryItemToDelete}`);
-      // Remove the deleted library item from the local state
       setLibraryItems(libraryItems.filter(item => item._id !== libraryItemToDelete));
       setLibraryItemToDelete(null);
     } catch (error) {
@@ -135,10 +132,47 @@ const Profile = () => {
     setLibraryItemToDelete(libraryItemId);
   };
 
+  const handleViewFile = async (itemId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/library/view/${itemId}`);
+      if (response.data.url) {
+        window.open(response.data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error viewing file:', error);
+      setError('Failed to view file');
+    }
+  };
+
+  const handleDownloadFile = async (itemId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/library/download/${itemId}`);
+      if (response.data.url) {
+        const link = document.createElement('a');
+        link.href = response.data.url;
+        link.download = response.data.filename || 'download';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      setError('Failed to download file');
+    }
+  };
+
+  // Helper function to determine if URL is from Vercel Blob or local
+  const getImageUrl = (imageUrl) => {
+    if (imageUrl.startsWith('http')) {
+      return imageUrl; // Already a full URL (Vercel Blob)
+    }
+    return `http://localhost:5000${imageUrl}`; // Local file
+  };
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="spinner">Loading...</div>
+      <div className = "flex justify-center items-center min-h-screen">
+        <div className = "spinner">Loading...</div>
       </div>
     );
   }
@@ -148,21 +182,21 @@ const Profile = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 mt-16">
+    <div className = "container mx-auto px-4 py-8 mt-16">
       {zoomedImage && (
         <ZoomedImage 
-          imageUrl={`http://localhost:5000${zoomedImage}`}
+          imageUrl={zoomedImage}
           productName="Zoomed Product"
           onClose={() => setZoomedImage(null)}
         />
       )}
 
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{isAdmin ? 'Admin Profile' : 'Profile'}</h1>
+      <div className = "flex justify-between items-center mb-8">
+        <h1 className = "text-3xl font-bold text-gray-900">{isAdmin ? 'Admin Profile' : 'Profile'}</h1>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button 
-              className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors cursor-pointer"
+              className = "flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors cursor-pointer"
             >
               <LogOut size={20} />
               <span>Log Out</span>
@@ -186,50 +220,48 @@ const Profile = () => {
       </div>
       
       {error && (
-        <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+        <div className = "mb-4 p-4 text-red-700 bg-red-100 rounded-md">
           {error}
         </div>
       )}
 
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <div className="space-y-6">
+      <div className = "bg-white shadow rounded-lg p-6 mb-6">
+        <div className = "space-y-6">
           <div>
-            <h3 className="text-lg font-medium text-gray-900">Personal Information</h3>
-            <p className="mt-1 text-sm text-gray-500">Your account information.</p>
+            <h3 className = "text-lg font-medium text-gray-900">Personal Information</h3>
+            <p className = "mt-1 text-sm text-gray-500">Your account information.</p>
           </div>
           
-          <div className="border-t border-gray-200 pt-6">
-            <dl className="divide-y divide-gray-200">
-              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt className="text-sm font-medium text-gray-500">Full name</dt>
+          <div className = "border-t border-gray-200 pt-6">
+            <dl className = "divide-y divide-gray-200">
+              <div className = "py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt className = "text-sm font-medium text-gray-500">Full name</dt>
                 <dd className={`mt-1 text-sm ${isAdmin ? 'font-bold text-dodgerblue' : 'text-gray-900'} sm:mt-0 sm:col-span-2`}>
                   {user.name}
                 </dd>
               </div>
-              <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt className="text-sm font-medium text-gray-500">Email address</dt>
+              <div className = "py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt className = "text-sm font-medium text-gray-500">Email address</dt>
                 <dd className={`mt-1 text-sm ${isAdmin ? 'font-bold text-dodgerblue' : 'text-gray-900'} sm:mt-0 sm:col-span-2`}>
                   {user.email}
                 </dd>
               </div>
               {isAdmin ? (
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                  <dt className="text-sm font-medium text-gray-500">Admin</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-bold text-dodgerblue">Yes</dd>
+                <div className = "py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className = "text-sm font-medium text-gray-500">Admin</dt>
+                  <dd className = "mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-bold text-dodgerblue">Yes</dd>
                 </div>
               ) : (
                 <div>
-
-                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt className="text-sm font-medium text-gray-500">Phone Number</dt>
-                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.phoneNumber}</dd>
+                  <div className = "py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                    <dt className = "text-sm font-medium text-gray-500">Phone Number</dt>
+                    <dd className = "mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.phoneNumber}</dd>
                   </div>
 
-                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt className="text-sm font-medium text-gray-500">University</dt>
-                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.university}</dd>
+                  <div className = "py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                    <dt className = "text-sm font-medium text-gray-500">University</dt>
+                    <dd className = "mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{user.university}</dd>
                   </div>
-
                 </div>
               )}
             </dl>
@@ -237,69 +269,73 @@ const Profile = () => {
         </div>
       </div>
       
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h3 className="text-lg text-gray-900 mb-12 font-extrabold">Marketplace Uploads</h3>
+      <div className = "bg-white shadow rounded-lg p-6 mb-6">
+        <h3 className = "text-lg text-gray-900 mb-12 font-extrabold">Marketplace Uploads</h3>
         {products.length === 0 ? (
-          <p className="text-gray-500">No uploads yet.</p>
+          <p className = "text-gray-500">No uploads yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product, index) => (
               <div
                 key={product._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                className = "bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
                 style={{
                   opacity: 0,
                   animation: `fadeIn 0.5s ease-out ${index * 0.1}s forwards`
                 }}
               >
                 <div 
-                  className="aspect-w-16 aspect-h-9 cursor-zoom-in"
-                  onClick={() => handleImageZoom(product.imageUrl)}
+                  className = "aspect-w-16 aspect-h-9 cursor-zoom-in"
+                  onClick={() => handleImageZoom(getImageUrl(product.imageUrl))}
                 >
                   <img
-                    src={`http://localhost:5000${product.imageUrl}`}
+                    src={getImageUrl(product.imageUrl)}
                     alt={product.productName}
-                    className="w-full h-48 object-cover"
+                    className = "w-full h-48 object-cover"
+                    onError={(e) => {
+                      console.error('Image failed to load:', product.imageUrl);
+                      e.target.src = '/placeholder-image.jpg'; // Fallback image
+                    }}
                   />
                 </div>
 
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h2 className="text-xl font-semibold text-gray-900">{product.productName}</h2>
-                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                <div className = "p-6">
+                  <div className = "flex justify-between items-start mb-2">
+                    <h2 className = "text-xl font-semibold text-gray-900">{product.productName}</h2>
+                    <span className = "px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
                       {product.productType}
                     </span>
                   </div>
 
-                  <div className="mb-4 border-t pt-4">
-                    <div className="flex items-center mb-2">
-                      <User className="mr-2 text-gray-500" size={20} />
-                      <span className="text-sm text-gray-700">{product.sellerName}</span>
+                  <div className = "mb-4 border-t pt-4">
+                    <div className = "flex items-center mb-2">
+                      <User className = "mr-2 text-gray-500" size={20} />
+                      <span className = "text-sm text-gray-700">{product.sellerName}</span>
                     </div>
-                    <div className="flex items-center mb-4">
-                      <Mail className="mr-2 text-gray-500" size={20} />
-                      <span className="text-sm text-gray-700">{product.sellerEmail}</span>
+                    <div className = "flex items-center mb-4">
+                      <Mail className = "mr-2 text-gray-500" size={20} />
+                      <span className = "text-sm text-gray-700">{product.sellerEmail}</span>
                     </div>
 
-                    <div className="flex items-center mb-4">
-                      <Phone className="mr-2 text-gray-500" size={20} />
-                      <span className="text-sm text-gray-700">{product.sellerContact}</span>
+                    <div className = "flex items-center mb-4">
+                      <Phone className = "mr-2 text-gray-500" size={20} />
+                      <span className = "text-sm text-gray-700">{product.sellerContact}</span>
                     </div>
                   </div>
 
-                  <p className="text-gray-600 mb-4">{product.description}</p>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-2xl font-bold text-gray-900">
+                  <p className = "text-gray-600 mb-4">{product.description}</p>
+                  <div className = "flex justify-between items-center mb-4">
+                    <span className = "text-2xl font-bold text-gray-900">
                       ${product.price.toFixed(2)}
                     </span>
                   </div>
 
-                  <div className="flex gap-4">
+                  <div className = "flex gap-4">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <button 
                           onClick={() => openDeleteConfirmation(product._id)}
-                          className="flex-1 flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer"
+                          className = "flex-1 flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer"
                         >
                           <Trash2 size={16} />
                           Delete Product
@@ -316,7 +352,7 @@ const Profile = () => {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction 
                             onClick={handleDeleteProduct}
-                            className="bg-red-600 hover:bg-red-700"
+                            className = "bg-red-600 hover:bg-red-700"
                           >
                             Delete Product
                           </AlertDialogAction>
@@ -331,40 +367,64 @@ const Profile = () => {
         )}
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h3 className="text-lg font-extrabold text-gray-900 mb-6">Library Uploads</h3>
+      <div className = "bg-white shadow rounded-lg p-6 mb-6">
+        <h3 className = "text-lg font-extrabold text-gray-900 mb-6">Library Uploads</h3>
         {libraryItems.length === 0 ? (
-          <p className="text-gray-500">No library uploads yet.</p>
+          <p className = "text-gray-500">No library uploads yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {libraryItems.map((item, index) => (
               <div
                 key={item._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                className = "bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
                 style={{
                   opacity: 0,
                   animation: `fadeIn 0.5s ease-out ${index * 0.1}s forwards`
                 }}
               >
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center space-x-3">
-                      <FileText className="text-purple-500" size={24} />
-                      <h2 className="text-xl font-semibold text-gray-900">{item.title}</h2>
+                <div className = "p-6">
+                  <div className = "flex justify-between items-start mb-4">
+                    <div className = "flex items-center space-x-3">
+                      <FileText className = "text-purple-500" size={24} />
+                      <h2 className = "text-xl font-semibold text-gray-900">{item.title}</h2>
                     </div>
-                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                    <span className = "px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
                       {item.semester}
                     </span>
                   </div>
 
-                  <p className="text-gray-600 mb-4 line-clamp-3">{item.description}</p>
+                  <p className = "text-gray-600 mb-4 line-clamp-3">{item.description}</p>
+                  
+                  <div className = "mb-4 text-sm text-gray-500">
+                    <p>Year: {item.year}</p>
+                    {item.files && item.files.length > 0 && (
+                      <p>Files: {item.files.length}</p>
+                    )}
+                  </div>
 
-                  <div className="flex gap-4 mt-4">
+                  <div className = "flex gap-2 mb-4">
+                    <button 
+                      onClick={() => handleViewFile(item._id)}
+                      className = "flex-1 flex items-center justify-center gap-2 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
+                    >
+                      <Eye size={16} />
+                      View
+                    </button>
+                    <button 
+                      onClick={() => handleDownloadFile(item._id)}
+                      className = "flex-1 flex items-center justify-center gap-2 bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-colors"
+                    >
+                      <Download size={16} />
+                      Download
+                    </button>
+                  </div>
+
+                  <div className = "flex gap-4">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <button 
                           onClick={() => openLibraryItemDeleteConfirmation(item._id)}
-                          className="flex-1 flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer"
+                          className = "flex-1 flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer"
                         >
                           <Trash2 size={16} />
                           Delete File
@@ -381,7 +441,7 @@ const Profile = () => {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction 
                             onClick={handleDeleteLibraryItem}
-                            className="bg-red-600 hover:bg-red-700"
+                            className = "bg-red-600 hover:bg-red-700"
                           >
                             Delete File
                           </AlertDialogAction>
@@ -396,16 +456,16 @@ const Profile = () => {
         )}
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Messages</h3>
-        <p className="text-gray-500">No messages yet.</p>
+      <div className = "bg-white shadow rounded-lg p-6 mb-6">
+        <h3 className = "text-lg font-medium text-gray-900 mb-4">Messages</h3>
+        <p className = "text-gray-500">No messages yet.</p>
       </div>
 
-      <div className="mt-8">
+      <div className = "mt-8">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button
-              className="text-red-600 hover:text-red-800 font-medium cursor-pointer flex gap-x-2"
+              className = "text-red-600 hover:text-red-800 font-medium cursor-pointer flex gap-x-2"
             >
               <Trash2 size={20} />
               Delete Account
@@ -422,7 +482,7 @@ const Profile = () => {
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction 
                 onClick={handleDeleteAccount}
-                className="bg-red-600 hover:bg-red-700"
+                className = "bg-red-600 hover:bg-red-700"
               >
                 Confirm Delete
               </AlertDialogAction>

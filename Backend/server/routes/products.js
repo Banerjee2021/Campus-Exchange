@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { put } from '@vercel/blob';
+import { put, del } from '@vercel/blob'; // Add del import
 import { verifyToken } from '../middleware/auth.js';
 import Product from '../models/Product.js';
 import User from '../models/User.js';  
@@ -114,21 +114,22 @@ router.get('/user', verifyToken, async (req, res) => {
 });
 
 // Modified route to delete a specific product - allowing admins to delete any product
+// AND delete associated image from Vercel Blob
 router.delete('/:productId', verifyToken, async (req, res) => {
   try {
+    let product;
+    
     // Check if the user is an admin
     if (req.user.isAdmin) {
       // If admin, allow deletion of any product
-      const product = await Product.findByIdAndDelete(req.params.productId);
+      product = await Product.findById(req.params.productId);
       
       if (!product) {
         return res.status(404).json({ message: 'Product not found' });
       }
-      
-      return res.json({ message: 'Product deleted successfully' });
     } else {
       // If regular user, only allow deletion of their own products
-      const product = await Product.findOneAndDelete({ 
+      product = await Product.findOne({ 
         _id: req.params.productId, 
         userId: req.user._id 
       });
@@ -136,9 +137,23 @@ router.delete('/:productId', verifyToken, async (req, res) => {
       if (!product) {
         return res.status(404).json({ message: 'Product not found or you do not have permission to delete' });
       }
-
-      return res.json({ message: 'Product deleted successfully' });
     }
+
+    // Delete the image from Vercel Blob if it exists
+    if (product.imageUrl && product.imageUrl.includes('vercel-storage.com')) {
+      try {
+        await del(product.imageUrl);
+        console.log('Image deleted from Vercel Blob:', product.imageUrl);
+      } catch (blobDeleteError) {
+        console.error('Error deleting image from Vercel Blob:', blobDeleteError);
+        // Continue with database deletion even if blob deletion fails
+      }
+    }
+
+    // Delete the product from the database
+    await Product.findByIdAndDelete(req.params.productId);
+
+    res.json({ message: 'Product and associated image deleted successfully' });
   } catch (error) {
     console.error('Error deleting product:', error);
     res.status(500).json({ message: 'Error deleting product', error: error.message });
