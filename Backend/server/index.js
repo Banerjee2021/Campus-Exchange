@@ -78,29 +78,45 @@ app.use('/api/library', libraryRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Connect to MongoDB with campus-exchange database
+// Connect to MongoDB campus-exchange cluster and database
 console.log('Connecting to MongoDB...');
-console.log('Database URI:', process.env.MONGODB_URI || 'mongodb://localhost:27017/campus-exchange');
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/campus-exchange')
-  .then(() => {
-    console.log('Connected to MongoDB - Database: campus-exchange');
-    console.log('Connected to cluster:', mongoose.connection.name);
-  })
-  .catch((error) => console.error('MongoDB connection error:', error));
-
-// Create uploads directory if it doesn't exist
-import { mkdir } from 'fs/promises';
-try {
-  await mkdir(path.join(__dirname, '../uploads/library'), { recursive: true });
-  await mkdir(path.join(__dirname, '../uploads/marketplace'), { recursive: true });
-} catch (err) {
-  console.error('Error creating uploads directory:', err);
+// Extract base URI and add database name properly
+let mongoURI;
+if (process.env.MONGODB_URI) {
+  // Insert database name before the query parameters
+  const baseURI = process.env.MONGODB_URI;
+  // Check if URI already has a database name or ends with /
+  if (baseURI.includes('?')) {
+    // Insert database name before query parameters
+    mongoURI = baseURI.replace('/?', '/campus-exchange?');
+  } else {
+    // Add database name at the end
+    mongoURI = baseURI + '/campus-exchange';
+  }
+} else {
+  mongoURI = 'mongodb://localhost:27017/campus-exchange';
 }
+
+console.log('Connecting to campus-exchange cluster and database...');
+console.log('MongoDB URI:', mongoURI);
+
+mongoose.connect(mongoURI)
+  .then(() => {
+    console.log('Connected to MongoDB successfully');
+    console.log('Cluster: campus-exchange');
+    console.log('Database: campus-exchange');
+    console.log('Ready to fetch data from all collections');
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
+  });
 
 // Use httpServer instead of app.listen
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Using database: ${mongoose.connection.name || 'campus-exchange'}`);
+  console.log(`Target cluster: data`);
+  console.log(`Target database: campus-exchange`);
 });
