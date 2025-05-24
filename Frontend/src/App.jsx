@@ -9,13 +9,13 @@ import Inbox from "./Pages/Inbox.jsx";
 
 // Lazy load pages
 const Home = React.lazy(() => import("./Pages/Home.jsx"));
-const Marketplace = React.lazy(() => import("./pages/Marketplace.jsx"));
-const Library = React.lazy(() => import("./pages/Library.jsx"));
-const Login = React.lazy(() => import("./pages/Login.jsx"));
-const Signup = React.lazy(() => import("./pages/Signup.jsx"));
-const Profile = React.lazy(() => import("./pages/Profile.jsx"));
-const PostItem = React.lazy(() => import("./pages/PostItem.jsx"));
-const PostLibraryItem = React.lazy(() => import("./pages/PostLibraryItem.jsx"));
+const Marketplace = React.lazy(() => import("./Pages/Marketplace.jsx"));
+const Library = React.lazy(() => import("./Pages/Library.jsx"));
+const Login = React.lazy(() => import("./Pages/Login.jsx"));
+const Signup = React.lazy(() => import("./Pages/Signup.jsx"));
+const Profile = React.lazy(() => import("./Pages/Profile.jsx"));
+const PostItem = React.lazy(() => import("./Pages/PostItem.jsx"));
+const PostLibraryItem = React.lazy(() => import("./Pages/PostLibraryItem.jsx"));
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {

@@ -95,6 +95,46 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const googleRegister = async (googleUserData) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/google-register', googleUserData);
+      
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      setUser(user);
+      setIsAdmin(false);
+      return { success: true };
+    } catch (error) {
+      console.error('Google registration error:', error.response?.data);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Google registration failed'
+      };
+    }
+  };
+
+  const googleLogin = async (googleCredential) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/google-login', {
+        credential: googleCredential
+      });
+      
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      setUser(user);
+      setIsAdmin(user.isAdmin || false);
+      return { success: true };
+    } catch (error) {
+      console.error('Google login error:', error.response?.data);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Google login failed'
+      };
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
@@ -151,6 +191,8 @@ export const AuthProvider = ({ children }) => {
       isAdmin,
       login,
       register,
+      googleRegister,
+      googleLogin,
       logout,
       deleteAccount,
       checkAuth

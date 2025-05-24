@@ -4,43 +4,68 @@ import bcrypt from 'bcryptjs';
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Name is required'],
-    trim: true,
-    minlength: [2, 'Name must be at least 2 characters long']
+    required: true,
+    trim: true
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: true,
     unique: true,
-    trim: true,
     lowercase: true,
-    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please enter a valid email']
+    trim: true
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
-    minlength: [6, 'Password must be at least 6 characters long']
-  },
-  university: {
-    type: String,
-    required: [true, 'University is required'],
-    trim: true
+    required: function() {
+      // Password is required only if it's not a Google user
+      return !this.isGoogleUser;
+    },
+    minlength: 6
   },
   phoneNumber: {
     type: String,
-    required: [true, 'Phone number is required'],
-    trim: true,
-    match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number']
+    required: true,
+    trim: true
   },
+  university: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  // Google OAuth fields
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true // Allow null values but ensure uniqueness when present
+  },
+  profilePicture: {
+    type: String,
+    default: null
+  },
+  isGoogleUser: {
+    type: Boolean,
+    default: false
+  },
+  // Additional user fields
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
 });
 
-// Hash password before saving
+// Hash password before saving (only if password exists)
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  // Update the updatedAt field
+  this.updatedAt = Date.now();
+  
+  // Only hash password if it exists and is modified
+  if (!this.isModified('password') || !this.password) {
+    return next();
+  }
   
   try {
     const salt = await bcrypt.genSalt(10);
@@ -51,9 +76,25 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Method to compare passwords
+// Compare password method
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  // If user is Google user and has no password, return false
+  if (this.isGoogleUser && !this.password) {
+    return false;
+  }
+  
+  if (!this.password) {
+    return false;
+  }
+  
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Transform output (remove password from JSON responses)
+userSchema.methods.toJSON = function() {
+  const userObject = this.toObject();
+  delete userObject.password;
+  return userObject;
 };
 
 const User = mongoose.model('User', userSchema);
