@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { RecaptchaVerifier } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -13,6 +14,16 @@ const firebaseConfig = {
   messagingSenderId: "1070246427271",
   appId: "1:1070246427271:web:5b13b513f6877a425a5622",
   measurementId: "G-7V67X5T32Q"
+};
+
+export const setupRecaptcha = (containerId) => {
+  return new RecaptchaVerifier(auth, containerId, {
+    'size': 'invisible',
+    'callback': (response) => {
+      // reCAPTCHA solved
+      console.log('reCAPTCHA verified');
+    }
+  });
 };
 
 // Initialize Firebase
