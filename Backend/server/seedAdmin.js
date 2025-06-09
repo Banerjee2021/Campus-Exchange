@@ -10,9 +10,9 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Admin details
 const adminData = {
-  name: 'Pratyush Nayak',
-  email: 'pratyushn567@gmail.com',
-  password: 'pratik0912'
+  name: 'Abhishek Nandi',
+  email: 'abhishekapdj01@gmail.com',
+  password: '12345678'
 };
 
 // Connect to MongoDB with campus-exchange database
