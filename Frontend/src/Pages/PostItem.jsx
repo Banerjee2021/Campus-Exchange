@@ -95,21 +95,21 @@ const PostItem = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Post New Item</h1>
+    <div className = "container mx-auto px-4 py-8">
+      <h1 className = "text-3xl font-bold text-gray-900 mb-8">Post New Item</h1>
       
-      <div className="max-w-2xl mx-auto">
+      <div className = "max-w-2xl mx-auto">
         {error && (
-          <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+          <div className = "mb-4 p-4 text-red-700 bg-red-100 rounded-md">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className = "space-y-6">
           {/* Form fields remain the same */}
           {/* ... */}
           <div>
-            <label htmlFor="productName" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="productName" className = "block text-sm font-medium text-gray-700">
               Product Name
             </label>
             <input
@@ -118,13 +118,13 @@ const PostItem = () => {
               name="productName"
               value={formData.productName}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
+              className = "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="description" className = "block text-sm font-medium text-gray-700">
               Description
             </label>
             <textarea
@@ -133,18 +133,18 @@ const PostItem = () => {
               value={formData.description}
               onChange={handleInputChange}
               rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
+              className = "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="price" className = "block text-sm font-medium text-gray-700">
               Price
             </label>
-            <div className="mt-1 relative rounded-md shadow-sm">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500 sm:text-sm"><IndianRupee size={16} /></span>
+            <div className = "mt-1 relative rounded-md shadow-sm">
+              <div className = "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span className = "text-gray-500 sm:text-sm"><IndianRupee size={16} /></span>
               </div>
               <input
                 type="number"
@@ -152,7 +152,7 @@ const PostItem = () => {
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
+                className = "pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
                 placeholder="0.00"
                 required
               />
@@ -160,7 +160,7 @@ const PostItem = () => {
           </div>
 
           <div>
-            <label htmlFor="productType" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="productType" className = "block text-sm font-medium text-gray-700">
               Product Type
             </label>
             <select
@@ -168,7 +168,7 @@ const PostItem = () => {
               name="productType"
               value={formData.productType}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1 cursor-pointer"
+              className = "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1 cursor-pointer"
               required
             >
               <option className = "cursor-pointer">Books</option>
@@ -179,13 +179,13 @@ const PostItem = () => {
           </div>
 
           <div>
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="image" className = "block text-sm font-medium text-gray-700">
               Product Image
             </label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-              <div className="space-y-1 text-center">
+            <div className = "mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div className = "space-y-1 text-center">
                 <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
+                  className = "mx-auto h-12 w-12 text-gray-400"
                   stroke="currentColor"
                   fill="none"
                   viewBox="0 0 48 48"
@@ -198,26 +198,26 @@ const PostItem = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <div className="flex text-sm text-gray-600">
+                <div className = "flex text-sm text-gray-600">
                   <label
                     htmlFor="file-upload"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500"
+                    className = "relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500"
                   >
                     <span>Upload a file</span>
                     <input
                       id="file-upload"
                       name="file-upload"
                       type="file"
-                      className="sr-only"
+                      className = "sr-only"
                       onChange={handleFileChange}
                       accept="image/*"
                     />
                   </label>
-                  <p className="pl-1">or drag and drop</p>
+                  <p className = "pl-1">or drag and drop</p>
                 </div>
-                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                <p className = "text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                 {fileDetails && (
-                  <p className="text-sm text-gray-600 mt-2">{fileDetails}</p>
+                  <p className = "text-sm text-gray-600 mt-2">{fileDetails}</p>
                 )}
               </div>
             </div>
@@ -226,7 +226,7 @@ const PostItem = () => {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 cursor-pointer"
+              className = "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 cursor-pointer"
             >
               Post Item
             </button>
@@ -245,7 +245,7 @@ const PostItem = () => {
           <AlertDialogFooter>
             <AlertDialogAction 
               onClick={() => navigate('/marketplace')}
-              className="bg-[#1E90FF] hover:bg-[#1E90FF]/90"
+              className = "bg-[#1E90FF] hover:bg-[#1E90FF]/90"
             >
               Continue
             </AlertDialogAction>

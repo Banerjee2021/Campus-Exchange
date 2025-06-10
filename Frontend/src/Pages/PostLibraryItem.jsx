@@ -135,25 +135,25 @@ const PostLibraryItem = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Post Library Item</h1>
+    <div className = "container mx-auto px-4 py-8">
+      <h1 className = "text-3xl font-bold text-gray-900 mb-8">Post Library Item</h1>
       
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <div className = "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
           {error}
         </div>
       )}
       
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <div className = "bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
           {success}
         </div>
       )}
       
-      <div className="max-w-2xl mx-auto">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div className = "max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className = "space-y-6">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="title" className = "block text-sm font-medium text-gray-700">
               Notes Title
             </label>
             <input
@@ -161,13 +161,13 @@ const PostLibraryItem = () => {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-purple-500 focus:ring-purple-500 py-1 px-1"
+              className = "mt-1 block w-full rounded-md border-gray-700 shadow-sm focus:border-purple-500 focus:ring-purple-500 py-1 px-1"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="description" className = "block text-sm font-medium text-gray-700">
               Description
             </label>
             <textarea
@@ -175,12 +175,12 @@ const PostLibraryItem = () => {
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
+              className = "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
             />
           </div>
 
           <div>
-            <label htmlFor="year" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="year" className = "block text-sm font-medium text-gray-700">
               Year
             </label>
             <input
@@ -188,20 +188,20 @@ const PostLibraryItem = () => {
               id="year"
               value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 py-1 px-1"
+              className = "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 py-1 px-1"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="semester" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="semester" className = "block text-sm font-medium text-gray-700">
               Semester
             </label>
             <select
               id="semester"
               value={semester}
               onChange={(e) => setSemester(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
+              className = "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 px-1 py-1"
               required
             >
               <option className = "cursor-pointer">First(1st)</option>
@@ -216,13 +216,13 @@ const PostLibraryItem = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className = "block text-sm font-medium text-gray-700">
               Upload Files
             </label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-              <div className="space-y-1 text-center">
+            <div className = "mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div className = "space-y-1 text-center">
                 <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
+                  className = "mx-auto h-12 w-12 text-gray-400"
                   stroke="currentColor"
                   fill="none"
                   viewBox="0 0 48 48"
@@ -235,25 +235,25 @@ const PostLibraryItem = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <div className="flex text-sm text-gray-600">
+                <div className = "flex text-sm text-gray-600">
                   <label
                     htmlFor="file-upload"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500"
+                    className = "relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500"
                   >
                     <span>Upload files</span>
                     <input 
                       id="file-upload" 
                       name="files" 
                       type="file" 
-                      className="sr-only" 
+                      className = "sr-only" 
                       multiple 
                       onChange={handleFileChange}
                       accept=".pdf,.doc,.docx"
                     />
                   </label>
-                  <p className="pl-1">or drag and drop</p>
+                  <p className = "pl-1">or drag and drop</p>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className = "text-xs text-gray-500">
                   PDF, DOC, DOCX up to 50MB 
                   {files.length > 0 && ` - ${files.length} file(s) selected`}
                 </p>
@@ -262,21 +262,21 @@ const PostLibraryItem = () => {
 
             {/* File details display */}
             {files.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-medium text-gray-700">Selected Files:</h3>
-                <ul className="divide-y divide-gray-200">
+              <div className = "mt-4">
+                <h3 className = "text-sm font-medium text-gray-700">Selected Files:</h3>
+                <ul className = "divide-y divide-gray-200">
                   {files.map((file, index) => (
-                    <li key={index} className="py-2 flex justify-between items-center">
-                      <div className="flex items-center">
-                        <span className="text-sm text-gray-600 mr-4">{file.name}</span>
-                        <span className="text-xs text-gray-500">
+                    <li key={index} className = "py-2 flex justify-between items-center">
+                      <div className = "flex items-center">
+                        <span className = "text-sm text-gray-600 mr-4">{file.name}</span>
+                        <span className = "text-xs text-gray-500">
                           {(file.size / 1024 / 1024).toFixed(2)} MB
                         </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveFile(file)}
-                        className="text-red-600 hover:text-red-800 text-sm cursor-pointer"
+                        className = "text-red-600 hover:text-red-800 text-sm cursor-pointer"
                       >
                         Remove
                       </button>
@@ -290,7 +290,7 @@ const PostLibraryItem = () => {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 cursor-pointer"
+              className = "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 cursor-pointer"
             >
               Post to Library
             </button>
@@ -307,7 +307,7 @@ const PostLibraryItem = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={handleContinue}  className="mt-2 sm:mt-0 inline-flex h-10 items-center justify-center rounded-md bg-[dodgerblue] px-4 py-2 text-sm font-medium text-white ring-offset-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-950 disabled:pointer-events-none disabled:opacity-50 cursor-pointer">
+            <AlertDialogAction onClick={handleContinue}  className = "mt-2 sm:mt-0 inline-flex h-10 items-center justify-center rounded-md bg-[dodgerblue] px-4 py-2 text-sm font-medium text-white ring-offset-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-950 disabled:pointer-events-none disabled:opacity-50 cursor-pointer">
               Continue to Library
             </AlertDialogAction>
           </AlertDialogFooter>
