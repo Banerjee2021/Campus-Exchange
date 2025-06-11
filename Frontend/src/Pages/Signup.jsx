@@ -80,8 +80,8 @@ const Signup = () => {
 
     const result = await googleRegister(googleRegistrationData);
     if (result.success) {
-      setShowSuccess(true);
-      setShowGoogleForm(false);
+      // Redirect immediately to home page after successful signup
+      navigate("/");
     } else {
       setError(result.message);
     }
@@ -252,29 +252,7 @@ const Signup = () => {
     );
   }
 
-  return (
-    <div>
-      <AlertDialog open={showSuccess} onOpenChange={setShowSuccess}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Account Created Successfully!</AlertDialogTitle>
-            <AlertDialogDescription>
-              Your account has been created successfully. Click continue to
-              proceed to your profile.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction
-              onClick={() => navigate("/")}
-              className = "bg-[#1E90FF] hover:bg-[#1E90FF]/90"
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
+  return null;
 };
 
 export default Signup;
