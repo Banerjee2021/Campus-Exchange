@@ -6,17 +6,17 @@ import LoadingScreen from "./components/LoadingScreen";
 import AdminManagement from "./components/AdminManagement.jsx";
 import Messages from "./Pages/Messages.jsx";
 import Inbox from "./Pages/Inbox.jsx";
-
-// Lazy load pages - Fixed imports with proper file extensions
-const Home = React.lazy(() => import("./Pages/Home.jsx"));
-const Marketplace = React.lazy(() => import("./Pages/Marketplace.jsx"));
-const Library = React.lazy(() => import("./Pages/Library.jsx"));
-const Login = React.lazy(() => import("./Pages/Login.jsx"));
-const Signup = React.lazy(() => import("./Pages/Signup.jsx"));
-const Profile = React.lazy(() => import("./Pages/Profile.jsx"));
-const PostItem = React.lazy(() => import("./Pages/PostItem.jsx"));
-const PostLibraryItem = React.lazy(() => import("./Pages/PostLibraryItem.jsx"));
 import ProtectedRoute from "./components/ProtectedRoute";
+
+// Import all components directly instead of lazy loading to avoid build issues
+import Home from "./Pages/Home.jsx";
+import Marketplace from "./Pages/Marketplace.jsx";
+import Library from "./Pages/Library.jsx";
+import Login from "./Pages/Login.jsx";
+import Signup from "./Pages/Signup.jsx";
+import Profile from "./Pages/Profile.jsx";
+import PostItem from "./Pages/PostItem.jsx";
+import PostLibraryItem from "./Pages/PostLibraryItem.jsx";
 
 // Component to handle loading state during navigation
 const LoadingWrapper = ({ children }) => {

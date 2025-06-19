@@ -175,7 +175,7 @@ const Navbar = () => {
                     <span>{isAdmin ? "Admin Profile" : "Profile"}</span>
                     <ChevronDown
                       size={16}
-                      className={`transition-transform duration-450 ${
+                      className = {`transition-transform duration-450 ${
                         isProfileDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
