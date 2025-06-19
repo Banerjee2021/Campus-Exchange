@@ -8,14 +8,14 @@ import Messages from "./Pages/Messages.jsx";
 import Inbox from "./Pages/Inbox.jsx";
 
 // Lazy load pages
-const Home = React.lazy(() => import("./Pages/Home.jsx"));
+const Home = React.lazy(() => import("./Pages/Home"));
 const Marketplace = React.lazy(() => import("./Pages/Marketplace"));
-const Library = React.lazy(() => import("./Pages/Library.jsx"));
-const Login = React.lazy(() => import("./Pages/Login.jsx"));
-const Signup = React.lazy(() => import("./Pages/Signup.jsx"));
-const Profile = React.lazy(() => import("./Pages/Profile.jsx"));
-const PostItem = React.lazy(() => import("./Pages/PostItem.jsx"));
-const PostLibraryItem = React.lazy(() => import("./Pages/PostLibraryItem.jsx"));
+const Library = React.lazy(() => import("./Pages/Library"));
+const Login = React.lazy(() => import("./Pages/Login"));
+const Signup = React.lazy(() => import("./Pages/Signup"));
+const Profile = React.lazy(() => import("./Pages/Profile"));
+const PostItem = React.lazy(() => import("./Pages/PostItem"));
+const PostLibraryItem = React.lazy(() => import("./Pages/PostLibraryItem"));
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Component to handle loading state during navigation
