@@ -9,7 +9,7 @@ import Inbox from "./Pages/Inbox.jsx";
 
 // Lazy load pages
 const Home = React.lazy(() => import("./Pages/Home.jsx"));
-const Marketplace = React.lazy(() => import("./Pages/Marketplace.jsx"));
+const Marketplace = React.lazy(() => import("./Pages/Marketplace"));
 const Library = React.lazy(() => import("./Pages/Library.jsx"));
 const Login = React.lazy(() => import("./Pages/Login.jsx"));
 const Signup = React.lazy(() => import("./Pages/Signup.jsx"));
